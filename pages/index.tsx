@@ -2,6 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Button, Container, Grid, Paper, Typography } from '@mui/material';
 
+const shuffleArray = (array:number[]) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+};
+
+
 const IndexPage = () => {
   const { control, setValue } = useForm();
   const [rows, setRows] = useState<any>([]);
@@ -24,6 +32,7 @@ useEffect(() => {
       grid.push(row);
     }
     setRows(grid);
+    shuffleArray(missingNumbers);
     setChoices(missingNumbers);
   };
 
