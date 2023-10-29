@@ -9,11 +9,11 @@ const shuffleArray = (array:number[]) => {
   }
 };
 
-
 const IndexPage = () => {
   const { control, setValue } = useForm();
   const [rows, setRows] = useState<any>([]);
   const [choices, setChoices] = useState<any>([]);
+  const [currentRow, setCurrentRow] = useState(0);
 
 useEffect(() => {
   const generateGrid = () => {
@@ -39,20 +39,26 @@ useEffect(() => {
   generateGrid();
 }, []);
 
-const handleChoice = (rowIndex:number, choice:number) => {
+const handleChoice = (choice:number) => {
+  if (currentRow >= rows.length) return;
+
   let newRows = [...rows];
-  //@ts-ignore
-  newRows[rowIndex] = newRows[rowIndex]?.map((item) =>
+  newRows[currentRow] = newRows[currentRow].map((item:any) =>
     item === null ? choice : item
   );
   setRows(newRows);
 
   const newChoices = choices.filter((item:any) => item !== choice);
+  shuffleArray(newChoices);
   setChoices(newChoices);
+
+  setCurrentRow(currentRow + 1);
 };
 
   return (
-    <Container>
+    <Container
+      maxWidth="md"
+    >
       <Typography variant="h2" gutterBottom>
         Number Game
       </Typography>
@@ -69,6 +75,9 @@ const handleChoice = (rowIndex:number, choice:number) => {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    borderColor: rowIndex === currentRow && number === null ? '#39e75f' : 'grey',
+                    borderWidth: rowIndex === currentRow && number === null ? 2: 1,
+                    borderStyle: 'solid',
                   }}
                 >
                   {number !== null ? (
@@ -81,15 +90,7 @@ const handleChoice = (rowIndex:number, choice:number) => {
                         <Button
                           variant="outlined"
                           color="primary"
-                          onClick={() =>
-                            setValue(
-                              `missingNumber_${rowIndex}`,
-                              'Select a number',
-                              {
-                                shouldValidate: true,
-                              }
-                            )
-                          }
+                          disabled={rowIndex !== currentRow}
                         >
                           ?
                         </Button>
@@ -106,18 +107,13 @@ const handleChoice = (rowIndex:number, choice:number) => {
         Choices
       </Typography>
       <Grid container spacing={2}>
-        {choices.map((choice:any, index:number) => (
+        {choices.map((choice:number, index:number) => (
           <Grid item key={index}>
             <Button
               variant="contained"
               color="secondary"
               style={{ fontSize: 36, width: 100, height: 100 }}
-              onClick={() => {
-                const rowIndex = rows.findIndex((row:any) => row.includes(null));
-                if (rowIndex !== -1) {
-                  handleChoice(rowIndex, choice);
-                }
-              }}
+              onClick={() => handleChoice(choice)}
             >
               {choice}
             </Button>
