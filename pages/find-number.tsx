@@ -1,18 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import NavBar from '@/components/NavBar';
 
+type MyNumber = {
+    value: number;
+    isBold: boolean;
+    top: number;
+    left: number;
+};
+
 const RandomNumbers = () => {
-    const [numbers, setNumbers] = useState([]);
+    const [numbers, setNumbers] = useState<any>([]);
     const maxAttempts = 500; // Limit the number of placement attempts
 
     useEffect(() => {
-        let placedNumbers = [];
+        let placedNumbers: MyNumber[] = [];
 
         for (let i = 1; i <= 200; i++) {
             let overlap, newNumber, attempts = 0;
 
             do {
-                newNumber = {
+                newNumber  = {
                     value: i,
                     isBold: Math.random() > 0.5,
                     top: Math.random() * 90, // Adjusted for potential size
@@ -31,7 +38,7 @@ const RandomNumbers = () => {
     }, []);
 
     // Check if the new number overlaps with any existing numbers
-    const checkOverlap = (newNumber, placedNumbers) => {
+    const checkOverlap = (newNumber: MyNumber, placedNumbers: MyNumber[]) => {
         const buffer = 2; // Pixels to add as buffer to each element
         const maxDimension = 2; // Max width/height of a number
 
@@ -52,7 +59,7 @@ const RandomNumbers = () => {
         <>
         <NavBar />
         <div style={{ position: 'relative', height: '100vh', width: '100vw', backgroundColor: '#eee7d7' }}> {/* Updated background color */}
-            {numbers.map(num => (
+            {numbers.map((num:any) => (
                 <span
                     key={num.value}
                     style={{
