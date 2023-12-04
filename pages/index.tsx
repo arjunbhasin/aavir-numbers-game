@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import NavBar from '@/components/NavBar';
 
 import { useForm, Controller } from 'react-hook-form';
-import { Button, Container, Grid, Paper, Typography } from '@mui/material';
+import { Button, Grid, Paper, Typography } from '@mui/material';
+import confetti from 'canvas-confetti';
 
 const shuffleArray = (array:number[]) => {
   for (let i = array.length - 1; i > 0; i--) {
@@ -12,50 +13,86 @@ const shuffleArray = (array:number[]) => {
 };
 
 const IndexPage = () => {
-  const { control, setValue } = useForm();
+  const { control } = useForm();
   const [rows, setRows] = useState<any>([]);
   const [choices, setChoices] = useState<any>([]);
   const [currentRow, setCurrentRow] = useState(0);
+  const [correctAnswers, setCorrectAnswers] = useState<any>([]); // Store correct answers
+  
+  // Function to trigger confetti
+  const triggerConfetti = () => {
+    confetti({
+      zIndex: 999,
+      particleCount: 100,
+      spread: 70,
+      angle: 60,
+      origin: { x: 0 },
+      colors: ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#9400d3'], // Rainbow colors
+    });
+    confetti({
+      zIndex: 999,
+      particleCount: 100,
+      spread: 70,
+      angle: 120,
+      origin: { x: 1 },
+      colors: ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#9400d3'], // Rainbow colors
+    });
 
-useEffect(() => {
-  const generateGrid = () => {
-    let grid = [];
-    let missingNumbers = [];
-    for (let i = 1; i <= 20; i += 5) {
-      let row = [];
-      for (let j = i; j < i + 5; j++) {
-        row.push(j);
-      }
-
-      const missingIndex = Math.floor(Math.random() * 5);
-      missingNumbers.push(row[missingIndex]);
-      row[missingIndex] = null;
-
-      grid.push(row);
-    }
-    setRows(grid);
-    shuffleArray(missingNumbers);
-    setChoices(missingNumbers);
+    // Refresh the page after 5 seconds
+    setTimeout(() => {
+      window.location.reload();
+    }, 4000);
   };
 
-  generateGrid();
-}, []);
+  useEffect(() => {
+    const generateGrid = () => {
+      let grid = [];
+      let missingNumbers = [];
+      let correctAnswersTemp = [];
+      for (let i = 1; i <= 20; i += 5) {
+        let row = [];
+        for (let j = i; j < i + 5; j++) {
+          row.push(j);
+        }
 
-const handleChoice = (choice:number) => {
-  if (currentRow >= rows.length) return;
+        const missingIndex = Math.floor(Math.random() * 5);
+        correctAnswersTemp.push(row[missingIndex]);
+        missingNumbers.push(row[missingIndex]);
+        row[missingIndex] = null;
 
-  let newRows = [...rows];
-  newRows[currentRow] = newRows[currentRow].map((item:any) =>
-    item === null ? choice : item
-  );
-  setRows(newRows);
+        grid.push(row);
+      }
+      setRows(grid);
+      shuffleArray(missingNumbers);
+      setChoices(missingNumbers);
+      setCorrectAnswers(correctAnswersTemp); // Set correct answers
+    };
 
-  const newChoices = choices.filter((item:any) => item !== choice);
-  shuffleArray(newChoices);
-  setChoices(newChoices);
+    generateGrid();
+  }, []);
 
-  setCurrentRow(currentRow + 1);
-};
+  const handleChoice = (choice:number) => {
+    if (currentRow >= rows.length) return;
+
+    // Check if the choice is correct
+    if (choice === correctAnswers[currentRow]) {
+      let newRows = [...rows];
+      newRows[currentRow] = newRows[currentRow].map((item:any) =>
+        item === null ? choice : item
+      );
+      setRows(newRows);
+
+      const newChoices = choices.filter((item:any) => item !== choice);
+      shuffleArray(newChoices);
+      setChoices(newChoices);
+
+      setCurrentRow(currentRow + 1);
+      // Check if game is completed
+      if (newChoices.length === 0) {
+        triggerConfetti();
+      }
+    }
+  };
 
   return (
     <>
