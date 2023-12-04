@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import NavBar from '@/components/NavBar';
+
 import { useForm, Controller } from 'react-hook-form';
 import { Button, Container, Grid, Paper, Typography } from '@mui/material';
 
@@ -56,11 +58,10 @@ const handleChoice = (choice:number) => {
 };
 
   return (
-    <Container
-      maxWidth="md"
-    >
-      <Typography variant="h2" gutterBottom>
-        Number Game
+    <>
+      <NavBar />
+      <Typography variant="h3" gutterBottom>
+        Missing Numbers 
       </Typography>
       <Grid container spacing={4}>
         {rows.map((row:any, rowIndex:number) => (
@@ -120,7 +121,7 @@ const handleChoice = (choice:number) => {
           </Grid>
         ))}
       </Grid>
-    </Container>
+    </>
   );
 };
 
