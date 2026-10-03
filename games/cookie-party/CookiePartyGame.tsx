@@ -2,14 +2,14 @@
 
 import KeyboardHint from "@/components/ui/KeyboardHint";
 import { LayoutGroup, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ANIMALS, Animal, Cookie, Dog, Plate } from "@/components/math/Art";
 import Choices from "@/components/math/Choices";
 import Button from "@/components/ui/Button";
 import { GridIcon, RestartIcon } from "@/components/ui/Icons";
 import LevelGame, { type LevelProps } from "@/components/ui/LevelGame";
 import { starsForMistakes } from "@/components/shapes/PatternGame";
-import { useGameKeys, useLater } from "@/lib/input";
+import { useGameKeys, useKeydown, useLater } from "@/lib/input";
 import { playSound } from "@/lib/sound";
 import { LEVELS } from "./levels";
 import { canGive, isDone, reverseAnswer, shareSentence, type PlatesLevel, type ReverseLevel, type ShareLevel } from "./logic";
@@ -146,19 +146,15 @@ function ShareView({ level, onWin, onLevels }: { level: ShareLevel } & Omit<Leve
     },
   });
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.metaKey || e.ctrlKey) return;
-      const n = Number(e.key);
-      if (n >= 1 && n <= level.plates) give(n - 1);
-      // a focused button already reacts to Space by itself
-      if (e.key === " " && level.dealButton && !(e.target instanceof HTMLButtonElement)) {
-        e.preventDefault();
-        dealRound();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+  useKeydown((e: KeyboardEvent) => {
+    if (e.metaKey || e.ctrlKey) return;
+    const n = Number(e.key);
+    if (n >= 1 && n <= level.plates) give(n - 1);
+    // a focused button already reacts to Space by itself
+    if (e.key === " " && level.dealButton && !(e.target instanceof HTMLButtonElement)) {
+      e.preventDefault();
+      dealRound();
+    }
   });
 
   const dogCookies = where.map((w, id) => (w === -2 ? id : -1)).filter((id) => id >= 0);

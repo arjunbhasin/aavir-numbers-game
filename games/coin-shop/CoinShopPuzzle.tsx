@@ -2,12 +2,12 @@
 
 import KeyboardHint from "@/components/ui/KeyboardHint";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Coin, ToyArt } from "@/components/math/AddArt";
 import Choices from "@/components/math/Choices";
 import type { PuzzleProps } from "@/components/shapes/PatternGame";
 import Button from "@/components/ui/Button";
-import { useLater } from "@/lib/input";
+import { useKeydown, useLater } from "@/lib/input";
 import { makeRng } from "@/lib/random";
 import { playSound } from "@/lib/sound";
 import { coinSentence, makeShopPuzzle, payResult } from "./logic";
@@ -65,26 +65,21 @@ export default function CoinShopPuzzle({ seed, difficulty, onSolved }: PuzzlePro
     }
   };
 
-  useEffect(() => {
-    if (p.kind !== "pay") return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.metaKey || e.ctrlKey) return;
-      if (e.key === "Enter") {
-        // Enter always pays, even when a coin button has focus; other buttons keep their own Enter
-        if (e.target instanceof HTMLButtonElement && !e.target.dataset.coin) return;
-        e.preventDefault();
-        pay();
-      } else if (e.key === "Backspace") {
-        e.preventDefault();
-        remove();
-      } else {
-        const v = e.key === "0" ? 10 : Number(e.key);
-        if (p.coins.includes(v)) add(v);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  });
+  useKeydown((e: KeyboardEvent) => {
+    if (p.kind !== "pay" || e.metaKey || e.ctrlKey) return;
+    if (e.key === "Enter") {
+      // Enter always pays, even when a coin button has focus; other buttons keep their own Enter
+      if (e.target instanceof HTMLButtonElement && !e.target.dataset.coin) return;
+      e.preventDefault();
+      pay();
+    } else if (e.key === "Backspace") {
+      e.preventDefault();
+      remove();
+    } else {
+      const v = e.key === "0" ? 10 : Number(e.key);
+      if (p.coins.includes(v)) add(v);
+    }
+  }, p.kind === "pay");
 
   if (p.kind === "change") {
     return (

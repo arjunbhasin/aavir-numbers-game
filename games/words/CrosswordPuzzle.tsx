@@ -2,11 +2,11 @@
 
 import KeyboardHint from "@/components/ui/KeyboardHint";
 import { motion } from "motion/react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { PuzzleProps } from "@/components/shapes/PatternGame";
 import { pictureFor } from "@/components/words/WordPictures";
 import { ArrowIcon } from "@/components/ui/Icons";
-import { useLater } from "@/lib/input";
+import { useKeydown, useLater } from "@/lib/input";
 import { makeRng } from "@/lib/random";
 import { playSound } from "@/lib/sound";
 import { crosswordTiles, makeCrossword, type Entry } from "./logic";
@@ -83,12 +83,10 @@ export default function CrosswordPuzzle({ seed, difficulty, onSolved }: PuzzlePr
     if (p >= cells.length) return;
     const next = { ...typed, [key(cells[p].r, cells[p].c)]: ch };
     setTyped(next);
-    let q = p + 1;
-    while (q < cells.length && lockedCell(cells[q].r, cells[q].c)) q++;
     const nowDone = checkEntries(next);
-    if (q < cells.length) setPos(q);
-    else if (nowDone.includes(active)) goToNextOpen(nowDone);
-    else setPos(cells.length - 1);
+    // move to the very next square, even a solved one: a child typing the whole word will type its letter next
+    if (nowDone.includes(active)) goToNextOpen(nowDone);
+    else setPos(Math.min(p + 1, cells.length - 1));
   };
 
   const erase = () => {
@@ -113,35 +111,31 @@ export default function CrosswordPuzzle({ seed, difficulty, onSolved }: PuzzlePr
     setPos(pick.k);
   };
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.metaKey || e.ctrlKey || solved) return;
-      if (/^[a-zA-Z]$/.test(e.key)) {
-        e.preventDefault();
-        type(e.key.toLowerCase());
-      } else if (e.key === "Backspace") {
-        e.preventDefault();
-        erase();
-      } else if (e.key.startsWith("Arrow")) {
-        e.preventDefault();
-        const dr = e.key === "ArrowDown" ? 1 : e.key === "ArrowUp" ? -1 : 0;
-        const dc = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
-        for (let k = 1; k < 7; k++) {
-          const r = cur.r + dr * k;
-          const c = cur.c + dc * k;
-          if (r < 0 || c < 0 || r >= cw.rows || c >= cw.cols) break;
-          if (solution.has(key(r, c))) {
-            selectCell(r, c);
-            break;
-          }
+  useKeydown((e: KeyboardEvent) => {
+    if (e.metaKey || e.ctrlKey || solved) return;
+    if (/^[a-zA-Z]$/.test(e.key)) {
+      e.preventDefault();
+      type(e.key.toLowerCase());
+    } else if (e.key === "Backspace") {
+      e.preventDefault();
+      erase();
+    } else if (e.key.startsWith("Arrow")) {
+      e.preventDefault();
+      const dr = e.key === "ArrowDown" ? 1 : e.key === "ArrowUp" ? -1 : 0;
+      const dc = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      for (let k = 1; k < 7; k++) {
+        const r = cur.r + dr * k;
+        const c = cur.c + dc * k;
+        if (r < 0 || c < 0 || r >= cw.rows || c >= cw.cols) break;
+        if (solution.has(key(r, c))) {
+          selectCell(r, c);
+          break;
         }
-      } else if (e.key === "Tab") {
-        e.preventDefault();
-        goToNextOpen(done.filter((i) => i !== active).concat(active));
       }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      goToNextOpen(done.filter((i) => i !== active).concat(active));
+    }
   });
 
   const numberAt = new Map(cw.entries.map((e) => [key(e.r, e.c), e.num]));

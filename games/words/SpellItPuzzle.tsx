@@ -1,11 +1,11 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { PuzzleProps } from "@/components/shapes/PatternGame";
 import { LetterBox, PictureCard } from "@/components/words/LetterTile";
 import { pictureFor } from "@/components/words/WordPictures";
-import { useLater } from "@/lib/input";
+import { useKeydown, useLater } from "@/lib/input";
 import { makeRng } from "@/lib/random";
 import { playSound } from "@/lib/sound";
 import { makeSpell } from "./logic";
@@ -41,16 +41,12 @@ export default function SpellItPuzzle({ seed, difficulty, onSolved }: PuzzleProp
     }
   };
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.metaKey || e.ctrlKey || !/^[a-zA-Z]$/.test(e.key)) return;
-      const ch = e.key.toLowerCase();
-      // prefer a tile with the right letter; otherwise any unused tile with that letter (it will shake)
-      const i = p.tiles.findIndex((t, k) => t === ch && !used.includes(k));
-      if (i !== -1) tap(i);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+  useKeydown((e: KeyboardEvent) => {
+    if (e.metaKey || e.ctrlKey || !/^[a-zA-Z]$/.test(e.key)) return;
+    const ch = e.key.toLowerCase();
+    // prefer a tile with the right letter; otherwise any unused tile with that letter (it will shake)
+    const i = p.tiles.findIndex((t, k) => t === ch && !used.includes(k));
+    if (i !== -1) tap(i);
   });
 
   return (

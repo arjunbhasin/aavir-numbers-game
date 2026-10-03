@@ -6,6 +6,7 @@ Friendly logic games and pattern puzzles for 6–7 year olds. Big buttons, cheer
 
 | Section | Game | How it plays |
 |---|---|---|
+| Race Day | Rainbow Rally | A pseudo-3D racer: steer while the car drives itself, grab stars and rainbow boost pads, and race three animal friends over 3 laps. Meadow, Beach and Snow tracks. |
 | Puzzle Adventures | Box Push | Sokoban. Push every box onto a star. 15 levels. |
 | | Ice Slide | The penguin slides until it hits a rock. Stop on the fish. 15 levels. |
 | | Key Maze | Each key opens one door of its color. Reach the treasure. 12 levels. |
@@ -56,6 +57,7 @@ The home page groups games into six sections with sticky tabs, shows each game's
 - On a touch screen an arrow pad appears, and you can swipe on the board.
 - Abacus: ← → pick a rod, ↑ ↓ move a bottom bead, Space moves the top (5) bead, Enter checks. Beads can also be tapped.
 - Word games: type letters on the keyboard or tap the tiles.
+- Rainbow Rally: hold ← → (or A D) to steer; on a tablet, press and hold either side of the road.
 
 ## Tablets
 

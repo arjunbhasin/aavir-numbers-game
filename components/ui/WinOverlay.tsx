@@ -1,5 +1,6 @@
 "use client";
 
+import { useKeydown } from "@/lib/input";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect } from "react";
 import { celebrate } from "@/lib/confetti";
@@ -34,19 +35,14 @@ export default function WinOverlay({
     celebrate();
   }, [open]);
 
-  useEffect(() => {
-    if (!open) return;
+  useKeydown((e: KeyboardEvent) => {
     const primary = onNext ?? onAgain;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "Enter" || !primary) return;
-      // a focused button (Next / Again / Levels) handles Enter itself
-      if (e.target instanceof HTMLButtonElement || e.target instanceof HTMLAnchorElement) return;
-      e.preventDefault();
-      primary();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onNext, onAgain]);
+    if (e.key !== "Enter" || !primary) return;
+    // a focused button (Next / Again / Levels) handles Enter itself
+    if (e.target instanceof HTMLButtonElement || e.target instanceof HTMLAnchorElement) return;
+    e.preventDefault();
+    primary();
+  }, open);
 
   const cheer = CHEERS[stars ?? 0] ?? CHEERS[0];
 

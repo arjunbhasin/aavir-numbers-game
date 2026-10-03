@@ -211,7 +211,22 @@ const RhymeIcon = () => (
   </div>
 );
 
+const RaceCarIcon = () => (
+  <svg viewBox="0 0 100 100" className="w-full h-full">
+    <path d="M10 78q40-18 80 0" stroke="#fff" strokeWidth="6" fill="none" strokeDasharray="10 8" />
+    <rect x="34" y="16" width="32" height="24" rx="10" fill="#4aa3ff" />
+    <rect x="28" y="30" width="44" height="14" rx="6" fill="#cfe9ff" />
+    <rect x="14" y="38" width="72" height="28" rx="10" fill="#ff5a5a" />
+    <rect x="14" y="56" width="72" height="10" rx="5" fill="#d94848" />
+    <rect x="20" y="44" width="12" height="7" rx="3" fill="#ffe066" />
+    <rect x="68" y="44" width="12" height="7" rx="3" fill="#ffe066" />
+    <rect x="10" y="58" width="16" height="14" rx="4" fill="#26324a" />
+    <rect x="74" y="58" width="16" height="14" rx="4" fill="#26324a" />
+  </svg>
+);
+
 export const GAME_ICONS: Record<string, React.ReactNode> = {
+  "rainbow-rally": <RaceCarIcon />,
   "box-push": <Crate />,
   "ice-slide": <Penguin />,
   "key-maze": <KeySprite color="y" />,

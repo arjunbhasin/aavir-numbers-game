@@ -5,6 +5,14 @@ const p = { fill: "none", stroke: "currentColor", strokeWidth: 2.4, strokeLineca
 /** Small line icons for the home page section headers and tabs. */
 export function SectionIcon({ id, className }: { id: SectionId; className?: string }) {
   switch (id) {
+    case "race":
+      return (
+        <svg viewBox="0 0 24 24" className={className} {...p} aria-hidden>
+          <path d="M5 4v17" />
+          <path d="M5 4h13l-2.5 4L18 12H5" />
+          <path d="M9 4v8M13 4v8" opacity=".4" />
+        </svg>
+      );
     case "logic":
       return (
         <svg viewBox="0 0 24 24" className={className} {...p} aria-hidden>

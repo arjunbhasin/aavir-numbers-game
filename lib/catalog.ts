@@ -1,6 +1,6 @@
 import type { Accent } from "@/components/ui/accents";
 
-export type SectionId = "logic" | "patterns" | "memory" | "words" | "numbers" | "addsub" | "abacus" | "multiply";
+export type SectionId = "race" | "logic" | "patterns" | "memory" | "words" | "numbers" | "addsub" | "abacus" | "multiply";
 
 export type GameInfo = {
   id: string;
@@ -16,6 +16,7 @@ export type SectionInfo = { id: SectionId; title: string; subtitle: string; acce
 
 /** Home page order: thinking games first, then math from counting up to dividing. */
 export const SECTIONS: SectionInfo[] = [
+  { id: "race", title: "Race Day", subtitle: "Steer, boost and race your friends", accent: "berry" },
   { id: "logic", title: "Puzzle Adventures", subtitle: "Plan your moves and solve each level", accent: "coral" },
   { id: "patterns", title: "Pattern Detective", subtitle: "Find the rule, pick the right shape", accent: "berry" },
   { id: "memory", title: "Memory Lane", subtitle: "Look closely, remember, and repeat", accent: "mint" },
@@ -27,6 +28,7 @@ export const SECTIONS: SectionInfo[] = [
 ];
 
 export const GAMES: GameInfo[] = [
+  { id: "rainbow-rally", title: "Rainbow Rally", blurb: "Race your animal friends on three tracks", accent: "berry", section: "race", levels: 3 },
   { id: "box-push", title: "Box Push", blurb: "Push the boxes onto the stars", accent: "coral", section: "logic", levels: 15 },
   { id: "ice-slide", title: "Ice Slide", blurb: "Slide the penguin to the fish", accent: "ocean", section: "logic", levels: 15 },
   { id: "key-maze", title: "Key Maze", blurb: "Find keys, open doors, get the treasure", accent: "grass", section: "logic", levels: 12 },

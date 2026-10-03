@@ -1,9 +1,9 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { Figure } from "@/games/patterns/figure";
-import { useGameKeys } from "@/lib/input";
+import { useGameKeys, useKeydown } from "@/lib/input";
 import FigureView from "./FigureView";
 
 const LETTERS = "ABCDEF";
@@ -27,20 +27,16 @@ export default function OptionRow({
 }) {
   const [focus, setFocus] = useState(-1);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (disabled || e.metaKey || e.ctrlKey) return;
-      const k = e.key.toUpperCase();
-      let idx = LETTERS.indexOf(k);
-      if (idx === -1 && /^[1-6]$/.test(k)) idx = Number(k) - 1;
-      if (idx >= 0 && idx < options.length && !used.includes(idx) && !wrong.includes(idx)) {
-        e.preventDefault();
-        onPick(idx);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [options.length, onPick, disabled, used, wrong]);
+  useKeydown((e: KeyboardEvent) => {
+    if (disabled || e.metaKey || e.ctrlKey) return;
+    const k = e.key.toUpperCase();
+    let idx = LETTERS.indexOf(k);
+    if (idx === -1 && /^[1-6]$/.test(k)) idx = Number(k) - 1;
+    if (idx >= 0 && idx < options.length && !used.includes(idx) && !wrong.includes(idx)) {
+      e.preventDefault();
+      onPick(idx);
+    }
+  });
 
   useGameKeys({
     enabled: !disabled,

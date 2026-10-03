@@ -72,3 +72,30 @@ export function playTone(freq: number, seconds = 0.35) {
   if (useProgress.getState().muted) return;
   tone(freq, 0, seconds, "triangle", 0.14);
 }
+
+/** A soft engine hum whose pitch follows the car's speed. Call stop() when the race ends. */
+export function createEngineSound() {
+  const ac = audio();
+  if (!ac) return { setSpeed: () => {}, stop: () => {} };
+  const osc = ac.createOscillator();
+  const filter = ac.createBiquadFilter();
+  const gain = ac.createGain();
+  osc.type = "sawtooth";
+  filter.type = "lowpass";
+  filter.frequency.value = 500;
+  gain.gain.value = 0;
+  osc.connect(filter).connect(gain).connect(ac.destination);
+  osc.start();
+  return {
+    setSpeed(pct: number) {
+      const muted = useProgress.getState().muted;
+      const t = ac.currentTime;
+      osc.frequency.setTargetAtTime(55 + 110 * pct, t, 0.1);
+      gain.gain.setTargetAtTime(muted || pct <= 0.01 ? 0 : 0.035, t, 0.15);
+    },
+    stop() {
+      gain.gain.setTargetAtTime(0, ac.currentTime, 0.05);
+      osc.stop(ac.currentTime + 0.3);
+    },
+  };
+}

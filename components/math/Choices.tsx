@@ -1,8 +1,8 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { useGameKeys } from "@/lib/input";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useGameKeys, useKeydown } from "@/lib/input";
 
 /**
  * Big answer buttons. Tap/click, or use ← → and Enter.
@@ -31,49 +31,51 @@ export default function Choices<T>({
 
   useEffect(() => () => clearTimeout(typed.current.timer), []);
 
-  useEffect(() => {
-    const pickIndex = (i: number) => {
-      if (i >= 0 && i < choices.length && !wrong.includes(i)) onPick(choices[i].value, i);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (disabled || e.metaKey || e.ctrlKey) return;
-      if (letters && /^[a-zA-Z]$/.test(e.key)) {
-        const i = choices.findIndex((c) => c.value === e.key.toLowerCase());
-        if (i !== -1) {
-          e.preventDefault();
-          pickIndex(i);
-        }
-        return;
+  const pickIndex = (i: number) => {
+    if (i >= 0 && i < choices.length && !wrong.includes(i)) onPick(choices[i].value, i);
+  };
+  // the "wait for a second digit" timer must use the latest choices, not the ones from when it started
+  const pickLatest = useRef(pickIndex);
+  useLayoutEffect(() => {
+    pickLatest.current = pickIndex;
+  });
+
+  useKeydown((e: KeyboardEvent) => {
+    if (disabled || e.metaKey || e.ctrlKey) return;
+    if (letters && /^[a-zA-Z]$/.test(e.key)) {
+      const i = choices.findIndex((c) => c.value === e.key.toLowerCase());
+      if (i !== -1) {
+        e.preventDefault();
+        pickIndex(i);
       }
-      if (!/^[0-9]$/.test(e.key)) return;
-      e.preventDefault();
-      if (!numeric) {
-        pickIndex(Number(e.key) - 1);
-        return;
-      }
-      const t = typed.current;
-      clearTimeout(t.timer);
-      t.text += e.key;
-      const values = choices.map((c) => String(c.value));
-      const exact = values.indexOf(t.text);
-      const longer = values.some((v) => v !== t.text && v.startsWith(t.text));
-      if (exact !== -1 && !longer) {
+      return;
+    }
+    if (!/^[0-9]$/.test(e.key)) return;
+    e.preventDefault();
+    if (!numeric) {
+      pickIndex(Number(e.key) - 1);
+      return;
+    }
+    const t = typed.current;
+    clearTimeout(t.timer);
+    t.text += e.key;
+    const values = choices.map((c) => String(c.value));
+    const exact = values.indexOf(t.text);
+    const longer = values.some((v) => v !== t.text && v.startsWith(t.text));
+    if (exact !== -1 && !longer) {
+      t.text = "";
+      pickIndex(exact);
+    } else if (!longer) {
+      t.text = ""; // typed a number that isn't an option
+    } else {
+      // wait a moment in case a second digit is coming (1 → 12)
+      t.timer = setTimeout(() => {
+        const i = values.indexOf(t.text);
         t.text = "";
-        pickIndex(exact);
-      } else if (!longer) {
-        t.text = ""; // typed a number that isn't an option
-      } else {
-        // wait a moment in case a second digit is coming (1 → 12)
-        t.timer = setTimeout(() => {
-          const i = values.indexOf(t.text);
-          t.text = "";
-          pickIndex(i);
-        }, 700);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [choices, onPick, disabled, wrong, numeric, letters]);
+        pickLatest.current(i);
+      }, 700);
+    }
+  });
 
   useGameKeys({
     enabled: !disabled,

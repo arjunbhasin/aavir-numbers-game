@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Board from "@/components/grid/Board";
 import PlayArea from "@/components/grid/PlayArea";
 import { Flower, Sprout } from "@/components/math/Art";
@@ -9,7 +9,7 @@ import Button from "@/components/ui/Button";
 import LevelGame, { type LevelProps } from "@/components/ui/LevelGame";
 import { starsForMistakes } from "@/components/shapes/PatternGame";
 import type { Dir } from "@/lib/grid";
-import { useIsTouch, useLater } from "@/lib/input";
+import { useIsTouch, useKeydown, useLater } from "@/lib/input";
 import { playSound } from "@/lib/sound";
 import { useCellSize } from "@/lib/useCellSize";
 import { LEVELS } from "./levels";
@@ -110,12 +110,8 @@ function GardenLevel({ level, onWin, onLevels }: LevelProps) {
     }, 1500);
   };
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === "t" && !e.metaKey && !e.ctrlKey) turn();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+  useKeydown((e: KeyboardEvent) => {
+    if (e.key.toLowerCase() === "t" && !e.metaKey && !e.ctrlKey) turn();
   });
 
   const inRect = (r: number, c: number) => r < size.rows && c < size.cols;

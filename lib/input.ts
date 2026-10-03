@@ -150,3 +150,21 @@ export function useLater() {
     timers.current.push(setTimeout(fn, ms));
   };
 }
+
+/**
+ * Listen for key presses on the whole page. The handler always sees the latest state:
+ * it is swapped in synchronously after each render, so two quick key presses
+ * never run against stale data (an ordinary effect only updates after the next paint).
+ */
+export function useKeydown(handler: (e: KeyboardEvent) => void, enabled = true) {
+  const ref = useRef(handler);
+  useLayoutEffect(() => {
+    ref.current = handler;
+  });
+  useEffect(() => {
+    if (!enabled) return;
+    const on = (e: KeyboardEvent) => ref.current(e);
+    window.addEventListener("keydown", on);
+    return () => window.removeEventListener("keydown", on);
+  }, [enabled]);
+}

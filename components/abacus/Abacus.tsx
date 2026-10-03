@@ -1,9 +1,9 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { fromRods, toRods, type Rod } from "@/lib/abacus";
-import { useGameKeys } from "@/lib/input";
+import { useGameKeys, useKeydown } from "@/lib/input";
 import { playSound } from "@/lib/sound";
 
 const COL = 72;
@@ -137,7 +137,8 @@ export function useAbacusKeys({
   onChange: (v: number) => void;
 }) {
   const latest = useRef({ value, selected });
-  useEffect(() => {
+  // update synchronously after each render, so two quick key presses both count
+  useLayoutEffect(() => {
     latest.current = { value, selected };
   });
 
@@ -163,15 +164,10 @@ export function useAbacusKeys({
     },
   });
 
-  useEffect(() => {
-    if (!enabled) return;
-    const onKey = (e: KeyboardEvent) => {
-      // Space always means "move the top bead" here, even if a button (like Check) still has focus
-      if (e.key !== " ") return;
-      e.preventDefault();
-      change((r) => ({ ...r, heaven: !r.heaven }));
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  });
+  useKeydown((e: KeyboardEvent) => {
+    // Space always means "move the top bead" here, even if a button (like Check) still has focus
+    if (e.key !== " ") return;
+    e.preventDefault();
+    change((r) => ({ ...r, heaven: !r.heaven }));
+  }, enabled);
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Carrot, HopBunny, Splash } from "@/components/math/Art";
 import Choices from "@/components/math/Choices";
 import Button from "@/components/ui/Button";
@@ -9,7 +9,7 @@ import DPad from "@/components/ui/DPad";
 import { GridIcon, RestartIcon } from "@/components/ui/Icons";
 import LevelGame, { type LevelProps } from "@/components/ui/LevelGame";
 import { starsForMistakes } from "@/components/shapes/PatternGame";
-import { useGameKeys, useIsTouch, useLater } from "@/lib/input";
+import { useGameKeys, useIsTouch, useKeydown, useLater } from "@/lib/input";
 import { playSound } from "@/lib/sound";
 import { LEVELS } from "./levels";
 import { addSentence, hop, type HopLevel, type PredictLevel } from "./logic";
@@ -189,14 +189,9 @@ function HopLevelView({ level, onWin, onLevels }: { level: HopLevel } & Omit<Lev
     }
   };
 
-  useEffect(() => {
-    if (level.size !== null || size === null) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === "c" && !e.metaKey && !e.ctrlKey && !busy) reset(null);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  });
+  useKeydown((e: KeyboardEvent) => {
+    if (e.key.toLowerCase() === "c" && !e.metaKey && !e.ctrlKey && !busy) reset(null);
+  }, level.size === null && size !== null);
 
   useGameKeys({
     enabled: !busy && size !== null,

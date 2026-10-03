@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const GAMES = [
+  ["rainbow-rally", "Rainbow Rally"],
   ["box-push", "Box Push"],
   ["ice-slide", "Ice Slide"],
   ["key-maze", "Key Maze"],

@@ -180,3 +180,20 @@ test("phone: the section tabs scroll to keep the active one visible", async ({ b
   await expect(tab).toBeInViewport();
   await ctx.close();
 });
+
+test("fast key presses all count (abacus beads and crossword letters)", async ({ page }) => {
+  await page.goto("/games/abacus-sums");
+  await page.getByRole("button", { name: "Level 1", exact: true }).click({ force: true });
+  const start = Number((await page.getByText(/^\d+ \+ \d+ = \?$/).innerText()).match(/\d+/)![0]);
+  await page.keyboard.press("ArrowLeft"); // tens rod: always empty here
+  for (let i = 0; i < 4; i++) await page.keyboard.press("ArrowUp"); // as fast as possible
+  await expect(page.getByRole("img", { name: `Abacus showing ${start + 40}` })).toBeVisible();
+
+  await page.goto("/games/crossword");
+  await page.getByRole("button", { name: /Hard/ }).click();
+  const clue = page.getByRole("button", { name: /^Clue 1 / }).first();
+  const word = (await clue.getAttribute("data-word"))!;
+  await clue.click();
+  await page.keyboard.type(word); // no delay between letters
+  await expect(clue).toHaveClass(/bg-grass/);
+});

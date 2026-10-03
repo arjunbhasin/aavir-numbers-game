@@ -12,11 +12,14 @@ export default function LevelPicker({
   count,
   accent,
   onPick,
+  labels,
 }: {
   gameId: string;
   count: number;
   accent: Accent;
   onPick: (level: number) => void;
+  /** optional names shown under each level number (e.g. race tracks) */
+  labels?: string[];
 }) {
   const progress = useProgress((s) => s.games[gameId]);
   const unlocked = unlockedUpTo(progress, count);
@@ -48,6 +51,7 @@ export default function LevelPicker({
               style={{ ["--btn-shadow" as string]: locked ? "#d5dde8" : stars ? "#c9d6e6" : a.shadow }}
             >
               {locked ? <LockIcon className="w-9 h-9" /> : <span className="text-4xl leading-none">{i + 1}</span>}
+              {labels && <span className="text-lg leading-none">{labels[i]}</span>}
               {!locked && stars > 0 && <Stars count={stars} size="w-5 h-5" />}
             </motion.button>
           );

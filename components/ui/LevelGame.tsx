@@ -19,10 +19,12 @@ export default function LevelGame({
   accent,
   count,
   renderLevel,
+  labels,
 }: {
   gameId: string;
   accent: Accent;
   count: number;
+  labels?: string[];
   renderLevel: (p: LevelProps) => ReactNode;
 }) {
   const [level, setLevel] = useState<number | null>(null);
@@ -37,12 +39,12 @@ export default function LevelGame({
     setAttempt((a) => a + 1);
   };
 
-  if (level === null) return <LevelPicker gameId={gameId} count={count} accent={accent} onPick={open} />;
+  if (level === null) return <LevelPicker gameId={gameId} count={count} accent={accent} onPick={open} labels={labels} />;
 
   return (
     <>
       <div className="text-xl font-semibold text-ink-soft mb-2">
-        Level {level + 1} <span className="opacity-60">of {count}</span>
+        {labels ? labels[level] : <>Level {level + 1} <span className="opacity-60">of {count}</span></>}
       </div>
       <div key={`${level}-${attempt}`} className="w-full flex flex-col items-center">
         {renderLevel({
