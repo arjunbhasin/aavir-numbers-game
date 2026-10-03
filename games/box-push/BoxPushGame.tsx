@@ -10,7 +10,7 @@ import { useHistory, useIsTouch, useLater } from "@/lib/input";
 import { playSound } from "@/lib/sound";
 import { useCellSize } from "@/lib/useCellSize";
 import { LEVELS } from "./levels";
-import { isGoal, isSolved, move, parseLevel } from "./logic";
+import { boxStuckInCorner, isGoal, isSolved, move, parseLevel } from "./logic";
 
 function BoxPushLevel({ level: index, onWin, onLevels }: LevelProps) {
   const level = useMemo(() => parseLevel(LEVELS[index].map), [index]);
@@ -20,7 +20,7 @@ function BoxPushLevel({ level: index, onWin, onLevels }: LevelProps) {
   const later = useLater();
   const [done, setDone] = useState(false);
   const touch = useIsTouch();
-  const cell = useCellSize(level.rows, level.cols, touch);
+  const cell = useCellSize(level.rows, level.cols, touch, 40);
   const s = history.state;
 
   const onMove = (d: Dir) => {
@@ -61,6 +61,11 @@ function BoxPushLevel({ level: index, onWin, onLevels }: LevelProps) {
       }}
       onLevels={onLevels}
       moves={history.moves}
+      extra={
+        <p className={`text-lg font-semibold text-center min-h-7 mt-3 ${boxStuckInCorner(level, s) ? "text-coral-dark" : "text-transparent"}`} role="status">
+          {boxStuckInCorner(level, s) ? "Oh no, a box is stuck in a corner! Press Undo to take that push back." : "."}
+        </p>
+      }
       par={par}
       board={
         <Board

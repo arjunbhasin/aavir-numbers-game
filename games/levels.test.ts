@@ -26,6 +26,28 @@ describe("Box Push", () => {
     for (const d of box.solve(level)!) s = box.move(level, s, d)!.state;
     expect(box.isSolved(level, s)).toBe(true);
   });
+  it.each(BOX.slice(15).map((l, i) => [i + 16, l] as const))("level %i starts with every box off its star, and isn't a straight shove", (_, l) => {
+    const level = box.parseLevel(l.map);
+    expect(level.start.boxes.every((b) => !box.isGoal(level, b))).toBe(true);
+    // the best solution pushes in more than one direction
+    let s = level.start;
+    const pushDirs = new Set<string>();
+    for (const d of box.solve(level)!) {
+      const r = box.move(level, s, d)!;
+      if (r.pushed) pushDirs.add(d);
+      s = r.state;
+    }
+    expect(pushDirs.size).toBeGreaterThanOrEqual(2);
+    expect(box.boxStuckInCorner(level, level.start)).toBe(false);
+  });
+
+  it("spots a box pushed into a corner", () => {
+    const level = box.parseLevel("#####\n#.  #\n# $@#\n#####");
+    expect(box.boxStuckInCorner(level, level.start)).toBe(false);
+    const pushed = box.move(level, level.start, "left")!.state; // box into the bottom-left corner
+    expect(box.boxStuckInCorner(level, pushed)).toBe(true);
+  });
+
   it("cannot push two boxes at once or push into walls", () => {
     const level = box.parseLevel("#####\n#@$$.#\n######");
     expect(box.move(level, level.start, "right")).toBeNull();

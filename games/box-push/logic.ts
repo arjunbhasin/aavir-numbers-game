@@ -71,6 +71,19 @@ export function isGoal(level: Level, p: Pos): boolean {
   return level.goals.some((g) => g.r === p.r && g.c === p.c);
 }
 
+/** A box pushed into a corner (walls on two touching sides) can never move again; off a star, the level is lost. */
+export function boxStuckInCorner(level: Level, s: State): boolean {
+  const wall = (p: Pos) => !isOpen(level, p);
+  return s.boxes.some((b) => {
+    if (isGoal(level, b)) return false;
+    const up = wall(step(b, "up"));
+    const down = wall(step(b, "down"));
+    const left = wall(step(b, "left"));
+    const right = wall(step(b, "right"));
+    return (up || down) && (left || right);
+  });
+}
+
 export function isSolved(level: Level, s: State): boolean {
   return s.boxes.every((b) => isGoal(level, b));
 }
