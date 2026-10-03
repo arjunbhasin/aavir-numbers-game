@@ -8,7 +8,7 @@ const winDialog = (page: Page) => page.getByRole("dialog", { name: "Level comple
 test("home page: section tabs, star total and keep-playing row", async ({ page }) => {
   await page.goto("/");
   const nav = page.getByRole("navigation", { name: "Game sections" });
-  for (const t of ["Puzzle Adventures", "Pattern Detective", "Memory Lane", "Number Fun", "Add & Take Away", "Times & Share"]) {
+  for (const t of ["Puzzle Adventures", "Pattern Detective", "Memory Lane", "Word Play", "Number Fun", "Add & Take Away", "Abacus Club", "Times & Share"]) {
     await expect(nav.getByRole("link", { name: t })).toBeVisible();
   }
   await nav.getByRole("link", { name: "Memory Lane" }).click();

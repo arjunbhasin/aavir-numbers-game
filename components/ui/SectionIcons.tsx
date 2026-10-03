@@ -39,6 +39,24 @@ export function SectionIcon({ id, className }: { id: SectionId; className?: stri
           <path d="M5 20 19 4" opacity=".35" />
         </svg>
       );
+    case "words":
+      return (
+        <svg viewBox="0 0 24 24" className={className} {...p} aria-hidden>
+          <path d="M3 18 7.5 6 12 18M4.7 14h5.6" />
+          <path d="M20 18v-6a2.5 2.5 0 0 0-5 0M20 15a2.5 2.5 0 1 1-2.5-2.5H20" />
+        </svg>
+      );
+    case "abacus":
+      return (
+        <svg viewBox="0 0 24 24" className={className} {...p} aria-hidden>
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <path d="M3 9h18M8 3v18M16 3v18" />
+          <circle cx="8" cy="6" r="1.4" fill="currentColor" />
+          <circle cx="16" cy="12" r="1.4" fill="currentColor" />
+          <circle cx="8" cy="12" r="1.4" fill="currentColor" />
+          <circle cx="16" cy="15" r="1.4" fill="currentColor" />
+        </svg>
+      );
     case "multiply":
       return (
         <svg viewBox="0 0 24 24" className={className} {...p} aria-hidden>

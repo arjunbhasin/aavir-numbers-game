@@ -30,6 +30,18 @@ Friendly logic games and pattern puzzles for 6–7 year olds. Big buttons, cheer
 | | Cookie Party | Deal cookies fairly to friends, leftovers go to the dog. Division as sharing, remainders, and working backwards. 12 levels. |
 | | Packing Day | Sokoban with eggs: every box you use must be full. Division as grouping, with mixed box sizes. 10 levels. |
 | | Magic Machine | Find a machine's rule, run it backwards, chain two machines. Division undoes multiplication. |
+| Word Play | Mini Crossword | Small picture crosswords filled from letter tiles. |
+| | Missing Letter | A picture word with one letter missing; pick it (Easy tests the middle vowel). |
+| | Spell It | Put scrambled letter tiles in order to spell the picture. |
+| | Word Search | Find picture words hidden in a letter grid. |
+| | Rhyme Time | Pick the pictures that rhyme with the word at the top. |
+| | Change One Letter | Word ladders: change one letter at a time to make each new picture. |
+| Abacus Club | Bead Reader | Read numbers on a soroban, and set them by moving beads. |
+| | Friend Finder | Little friends (make 5) and big friends (make 10), plus formula gaps like +4 = +5 − ?. |
+| | Which Formula? | Choose direct, little friend, big friend, or big + little friend, then watch the beads. |
+| | Abacus Sums | Do sums on the abacus yourself, from direct sums to two-digit sums. 8 levels. |
+| | Flash Abacus | Numbers flash one at a time; add them in your head. |
+| | Friend Pairs | Memory game where matching cards are friends that make 5 or 10. |
 | Number Fun | Missing Numbers | Put lost numbers back into a 1–20, 1–50 or 1–100 grid. |
 | | Find Numbers | Find 1, 2, 3… hidden among scattered numbers. |
 
@@ -42,6 +54,8 @@ The home page groups games into six sections with sticky tabs, shows each game's
 - Arrow keys or WASD move. `U` (or Backspace) undoes, `R` restarts, Enter continues.
 - Answer choices: click, use the arrows and Enter, or type the number answer. Shape answers use `A`–`E` or `1`–`5`.
 - On a touch screen an arrow pad appears, and you can swipe on the board.
+- Abacus: ← → pick a rod, ↑ ↓ move a bottom bead, Space moves the top (5) bead, Enter checks. Beads can also be tapped.
+- Word games: type letters on the keyboard or tap the tiles.
 
 ## Tech
 

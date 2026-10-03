@@ -1,6 +1,6 @@
 import type { Accent } from "@/components/ui/accents";
 
-export type SectionId = "logic" | "patterns" | "memory" | "numbers" | "addsub" | "multiply";
+export type SectionId = "logic" | "patterns" | "memory" | "words" | "numbers" | "addsub" | "abacus" | "multiply";
 
 export type GameInfo = {
   id: string;
@@ -19,8 +19,10 @@ export const SECTIONS: SectionInfo[] = [
   { id: "logic", title: "Puzzle Adventures", subtitle: "Plan your moves and solve each level", accent: "coral" },
   { id: "patterns", title: "Pattern Detective", subtitle: "Find the rule, pick the right shape", accent: "berry" },
   { id: "memory", title: "Memory Lane", subtitle: "Look closely, remember, and repeat", accent: "mint" },
+  { id: "words", title: "Word Play", subtitle: "Letters, spelling, rhymes and crosswords", accent: "tangerine" },
   { id: "numbers", title: "Number Fun", subtitle: "Count, order and find numbers", accent: "ocean" },
   { id: "addsub", title: "Add & Take Away", subtitle: "Make ten, balance, shop and take away", accent: "sun" },
+  { id: "abacus", title: "Abacus Club", subtitle: "Beads, little friends, big friends and formulas", accent: "grass" },
   { id: "multiply", title: "Times & Share", subtitle: "Groups, hops and fair sharing", accent: "grape" },
 ];
 
@@ -49,6 +51,18 @@ export const GAMES: GameInfo[] = [
   { id: "copy-lights", title: "Copy the Lights", blurb: "Watch the lights, then play them back", accent: "coral", section: "memory", levels: 3 },
   { id: "whats-missing", title: "What's Missing?", blurb: "Remember the toys. Which one went away?", accent: "sun", section: "memory", levels: 3 },
   { id: "footprints", title: "Footprints", blurb: "Watch the robot's path, then walk it yourself", accent: "mint", section: "memory", levels: 3 },
+  { id: "bead-reader", title: "Bead Reader", blurb: "Read the beads, then show numbers on the abacus", accent: "grass", section: "abacus", levels: 3 },
+  { id: "friend-finder", title: "Friend Finder", blurb: "Little friends make 5, big friends make 10", accent: "sun", section: "abacus", levels: 3 },
+  { id: "which-formula", title: "Which Formula?", blurb: "Direct, little friend, big friend or both?", accent: "ocean", section: "abacus", levels: 3 },
+  { id: "abacus-sums", title: "Abacus Sums", blurb: "Move the beads to do the sum yourself", accent: "coral", section: "abacus", levels: 8 },
+  { id: "flash-abacus", title: "Flash Abacus", blurb: "Numbers flash by. Add them in your head", accent: "grape", section: "abacus", levels: 3 },
+  { id: "friend-pairs", title: "Friend Pairs", blurb: "Flip cards to find friends that make 5 or 10", accent: "mint", section: "abacus", levels: 3 },
+  { id: "crossword", title: "Mini Crossword", blurb: "Fill the picture crossword with letter tiles", accent: "tangerine", section: "words", levels: 3 },
+  { id: "missing-letter", title: "Missing Letter", blurb: "Which letter fills the gap?", accent: "berry", section: "words", levels: 3 },
+  { id: "spell-it", title: "Spell It", blurb: "Put the letters in order to spell the picture", accent: "ocean", section: "words", levels: 3 },
+  { id: "word-search", title: "Word Search", blurb: "Find the hidden picture words", accent: "grass", section: "words", levels: 3 },
+  { id: "rhyme-time", title: "Rhyme Time", blurb: "Which pictures rhyme?", accent: "grape", section: "words", levels: 3 },
+  { id: "word-ladder", title: "Change One Letter", blurb: "Change one letter to make a new word", accent: "coral", section: "words", levels: 3 },
   { id: "missing-numbers", title: "Missing Numbers", blurb: "Put the lost numbers back", accent: "ocean", section: "numbers", levels: 3 },
   { id: "find-numbers", title: "Find Numbers", blurb: "Find 1, then 2, then 3...", accent: "mint", section: "numbers", levels: 3 },
 ];

@@ -1,4 +1,4 @@
-export type Accent = "coral" | "sun" | "grass" | "ocean" | "grape" | "berry" | "mint";
+export type Accent = "coral" | "sun" | "grass" | "ocean" | "grape" | "berry" | "mint" | "tangerine";
 
 /** Literal class names per accent so Tailwind can see them. */
 export const ACCENT: Record<Accent, { bg: string; text: string; soft: string; ring: string; shadow: string; hex: string }> = {
@@ -9,4 +9,5 @@ export const ACCENT: Record<Accent, { bg: string; text: string; soft: string; ri
   grape: { bg: "bg-grape", text: "text-grape-dark", soft: "bg-grape/15", ring: "ring-grape", shadow: "#8253d1", hex: "#a678f0" },
   berry: { bg: "bg-berry", text: "text-berry-dark", soft: "bg-berry/15", ring: "ring-berry", shadow: "#e04b8e", hex: "#ff6fae" },
   mint: { bg: "bg-mint", text: "text-mint-dark", soft: "bg-mint/15", ring: "ring-mint", shadow: "#1fae9e", hex: "#3fd1c0" },
+  tangerine: { bg: "bg-tangerine", text: "text-tangerine-dark", soft: "bg-tangerine/15", ring: "ring-tangerine", shadow: "#e57f1a", hex: "#ff9f43" },
 };

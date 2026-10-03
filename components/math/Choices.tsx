@@ -27,6 +27,7 @@ export default function Choices<T>({
   const [focus, setFocus] = useState(-1);
   const typed = useRef({ text: "", timer: undefined as ReturnType<typeof setTimeout> | undefined });
   const numeric = choices.every((c) => typeof c.value === "number");
+  const letters = choices.every((c) => typeof c.value === "string" && /^[a-z]$/.test(c.value));
 
   useEffect(() => () => clearTimeout(typed.current.timer), []);
 
@@ -35,7 +36,16 @@ export default function Choices<T>({
       if (i >= 0 && i < choices.length && !wrong.includes(i)) onPick(choices[i].value, i);
     };
     const onKey = (e: KeyboardEvent) => {
-      if (disabled || e.metaKey || e.ctrlKey || !/^[0-9]$/.test(e.key)) return;
+      if (disabled || e.metaKey || e.ctrlKey) return;
+      if (letters && /^[a-zA-Z]$/.test(e.key)) {
+        const i = choices.findIndex((c) => c.value === e.key.toLowerCase());
+        if (i !== -1) {
+          e.preventDefault();
+          pickIndex(i);
+        }
+        return;
+      }
+      if (!/^[0-9]$/.test(e.key)) return;
       e.preventDefault();
       if (!numeric) {
         pickIndex(Number(e.key) - 1);
@@ -63,7 +73,7 @@ export default function Choices<T>({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [choices, onPick, disabled, wrong, numeric]);
+  }, [choices, onPick, disabled, wrong, numeric, letters]);
 
   useGameKeys({
     enabled: !disabled,

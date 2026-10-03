@@ -1,6 +1,8 @@
 import { Crate, KeySprite, Penguin, Robot } from "@/components/grid/Sprites";
 import { Carton, Cookie, Flower, HopBunny, Ladybug, MachineBox } from "@/components/math/Art";
 import { Coin, Monster, Stone } from "@/components/math/AddArt";
+import Abacus from "@/components/abacus/Abacus";
+import { WORD_PICTURES } from "@/components/words/WordPictures";
 
 const W = "#ffffff";
 const INK = "#26324a";
@@ -161,6 +163,54 @@ const FeetIcon = () => (
   </svg>
 );
 
+const TextIcon = ({ lines, size = 30 }: { lines: string[]; size?: number }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full">
+    <rect x="4" y={50 - lines.length * (size * 0.65)} width="92" height={lines.length * size * 1.3} rx="14" fill={W} />
+    {lines.map((l, i) => (
+      <text key={i} x="50" y={50 - (lines.length - 1) * size * 0.65 + i * size * 1.3 + size * 0.36} textAnchor="middle" fontSize={size} fontWeight="800" fill={INK} fontFamily="sans-serif">
+        {l}
+      </text>
+    ))}
+  </svg>
+);
+
+const TilesWordIcon = ({ letters, gap }: { letters: string; gap?: number }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full">
+    {letters.split("").map((ch, i) => {
+      const x = 50 - (letters.length * 28) / 2 + i * 28 + 1;
+      return (
+        <g key={i}>
+          <rect x={x} y="34" width="26" height="32" rx="6" fill={i === gap ? "#ffe066" : W} />
+          <text x={x + 13} y="59" textAnchor="middle" fontSize="22" fontWeight="800" fill={INK} fontFamily="sans-serif">
+            {i === gap ? "?" : ch}
+          </text>
+        </g>
+      );
+    })}
+  </svg>
+);
+
+const GridWordIcon = ({ highlight }: { highlight: "cross" | "search" }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full">
+    {Array.from({ length: 16 }, (_, i) => {
+      const r = Math.floor(i / 4);
+      const c = i % 4;
+      const on = highlight === "cross" ? r === 1 || c === 2 : r === 2 && c > 0;
+      const hidden = highlight === "cross" && !(r === 1 || c === 2);
+      if (hidden) return null;
+      return <rect key={i} x={10 + c * 21} y={10 + r * 21} width="19" height="19" rx="4" fill={on ? "#ffe066" : W} />;
+    })}
+    {highlight === "search" && <rect x="29" y="50" width="61" height="21" rx="10" fill="none" stroke={INK} strokeWidth="3" />}
+  </svg>
+);
+
+const RhymeIcon = () => (
+  <div className="w-full h-full grid grid-cols-2 gap-1 items-center">
+    <span className="aspect-square bg-white rounded-xl p-1">{WORD_PICTURES.cat}</span>
+    <span className="aspect-square bg-white rounded-xl p-1">{WORD_PICTURES.hat}</span>
+  </div>
+);
+
 export const GAME_ICONS: Record<string, React.ReactNode> = {
   "box-push": <Crate />,
   "ice-slide": <Penguin />,
@@ -186,6 +236,18 @@ export const GAME_ICONS: Record<string, React.ReactNode> = {
   "copy-lights": <LightsIcon />,
   "whats-missing": <TrayIcon />,
   footprints: <FeetIcon />,
+  "bead-reader": <Abacus value={7} rods={1} labels={false} className="h-full mx-auto" />,
+  "friend-finder": <TextIcon lines={["3 + 2", "= 5"]} size={24} />,
+  "which-formula": <TextIcon lines={["+4 =", "+5 − 1"]} size={22} />,
+  "abacus-sums": <Abacus value={27} rods={2} labels={false} className="h-full mx-auto" />,
+  "flash-abacus": <TextIcon lines={["4 + 3", "+ 2 ?"]} size={24} />,
+  "friend-pairs": <TextIcon lines={["4 ♥ 6"]} size={28} />,
+  crossword: <GridWordIcon highlight="cross" />,
+  "missing-letter": <TilesWordIcon letters="cat" gap={1} />,
+  "spell-it": <TilesWordIcon letters="sun" />,
+  "word-search": <GridWordIcon highlight="search" />,
+  "rhyme-time": <RhymeIcon />,
+  "word-ladder": <TextIcon lines={["CAT", "↓ HAT"]} size={22} />,
   "missing-numbers": <NumbersIcon />,
   "find-numbers": <FindIcon />,
 };

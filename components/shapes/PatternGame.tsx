@@ -15,6 +15,8 @@ export const ROUND_LENGTH = 5;
 export type PuzzleProps = {
   seed: number;
   difficulty: Difficulty;
+  /** position of this puzzle in the round, starting at 0 */
+  index: number;
   /** call once the puzzle is solved, with how many wrong tries it took */
   onSolved: (mistakes: number) => void;
 };
@@ -33,8 +35,11 @@ export default function PatternGame({
   gameId,
   renderPuzzle,
   blurbs,
+  roundLength = ROUND_LENGTH,
 }: {
   gameId: string;
+  /** puzzles per round (long puzzles like crosswords use fewer) */
+  roundLength?: number;
   /** what each difficulty means for this game, shown on the picker */
   blurbs?: [string, string, string];
   renderPuzzle: (p: PuzzleProps & { key: string }) => ReactNode;
@@ -69,8 +74,8 @@ export default function PatternGame({
     <div className="w-full flex flex-col items-center">
       <div className="flex items-center gap-4 mb-4">
         <span className="text-xl font-semibold text-ink-soft">{DIFFICULTY_NAMES[difficulty]}</span>
-        <div className="flex gap-2" role="img" aria-label={`Puzzle ${index + 1} of ${ROUND_LENGTH}`}>
-          {Array.from({ length: ROUND_LENGTH }, (_, i) => (
+        <div className="flex gap-2" role="img" aria-label={`Puzzle ${index + 1} of ${roundLength}`}>
+          {Array.from({ length: roundLength }, (_, i) => (
             <motion.span
               key={i}
               animate={{ scale: i === index ? 1.25 : 1 }}
@@ -83,11 +88,12 @@ export default function PatternGame({
       {renderPuzzle({
         key: `${roundSeed}-${index}`,
         seed: roundSeed + index * 7919,
+        index,
         difficulty,
         onSolved: (m) => {
           const total = mistakes + m;
           setMistakes(total);
-          if (index + 1 >= ROUND_LENGTH) {
+          if (index + 1 >= roundLength) {
             const stars = starsForMistakes(total);
             record(gameId, difficulty, stars);
             setWon(stars);
