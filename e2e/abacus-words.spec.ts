@@ -135,3 +135,44 @@ test("Friend Pairs: cards match when they make the target", async ({ page }) => 
   }
   await expect(page.getByRole("dialog", { name: "Level complete" })).toBeVisible({ timeout: 4000 });
 });
+
+test("Mini Crossword: typing every answer completes the puzzle", async ({ page }) => {
+  await page.goto("/games/crossword");
+  await page.getByRole("button", { name: /Hard/ }).click();
+  const clues = page.getByRole("button", { name: /^Clue \d+ (across|down)$/ });
+  const n = await clues.count();
+  for (let i = 0; i < n; i++) {
+    const clue = clues.nth(i);
+    const word = (await clue.getAttribute("data-word"))!;
+    await clue.click();
+    await page.keyboard.type(word);
+    await page.waitForTimeout(150);
+  }
+  await expect(page.getByText("Crossword complete!")).toBeVisible();
+  await expect(page.getByLabel("Puzzle 2 of 3")).toBeVisible({ timeout: 4000 });
+});
+
+test("Mini Crossword: a wrong word is flagged and can be fixed", async ({ page }) => {
+  await page.goto("/games/crossword");
+  await page.getByRole("button", { name: /Easy/ }).click();
+  const clue = page.getByRole("button", { name: /^Clue 1 / }).first();
+  const word = (await clue.getAttribute("data-word"))!;
+  await clue.click();
+  const wrong = word.slice(0, -1) + (word.endsWith("z") ? "y" : "z");
+  await page.keyboard.type(wrong);
+  await page.waitForTimeout(100);
+  await page.keyboard.press("Backspace");
+  await page.keyboard.type(word.slice(-1));
+  await expect(page.getByRole("button", { name: new RegExp(`: ${word.slice(-1)}$`) }).first()).toBeVisible();
+});
+
+test("phone: the section tabs scroll to keep the active one visible", async ({ browser }) => {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const page = await ctx.newPage();
+  await page.goto("/");
+  await page.evaluate(() => document.getElementById("section-multiply")!.scrollIntoView());
+  const tab = page.getByRole("navigation", { name: "Game sections" }).getByRole("link", { name: "Times & Share" });
+  await expect(tab).toHaveAttribute("aria-current", "true");
+  await expect(tab).toBeInViewport();
+  await ctx.close();
+});

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GAMES, SECTIONS, maxStars } from "@/lib/catalog";
 import { totalStars, useProgress } from "@/lib/progress";
 import { ACCENT } from "./accents";
@@ -58,6 +58,12 @@ export function KeepPlaying() {
 /** Sticky row of section tabs. The section on screen is highlighted. */
 export function SectionNav() {
   const [active, setActive] = useState<string>(SECTIONS[0].id);
+  const row = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    // scroll the tab row (not the page) so the highlighted tab is in view on small screens
+    const el = row.current?.querySelector<HTMLElement>(`[data-section="${active}"]`);
+    if (el && row.current) row.current.scrollTo({ left: el.offsetLeft - row.current.clientWidth / 2 + el.clientWidth / 2, behavior: "smooth" });
+  }, [active]);
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -74,7 +80,7 @@ export function SectionNav() {
   }, []);
   return (
     <nav className="sticky top-0 z-30 -mx-4 px-4 py-3 bg-sky-top/85 backdrop-blur-md" aria-label="Game sections">
-      <div className="flex gap-2 overflow-x-auto">
+      <div ref={row} className="flex gap-2 overflow-x-auto">
         {SECTIONS.map((s) => {
           const a = ACCENT[s.accent];
           const on = active === s.id;
@@ -82,6 +88,7 @@ export function SectionNav() {
             <a
               key={s.id}
               href={`#section-${s.id}`}
+              data-section={s.id}
               aria-current={on ? "true" : undefined}
               className={`flex items-center gap-2 shrink-0 h-11 px-4 rounded-full text-base font-semibold transition-colors ${
                 on ? `${a.bg} text-white shadow-[0_4px_0_rgba(0,0,0,.15)]` : "bg-white/80 text-ink hover:bg-white"

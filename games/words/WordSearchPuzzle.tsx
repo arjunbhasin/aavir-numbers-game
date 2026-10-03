@@ -108,6 +108,8 @@ export default function WordSearchPuzzle({ seed, difficulty, onSolved }: PuzzleP
                 aria-label={`${ch}, row ${r + 1} column ${c + 1}`}
                 onPointerDown={(e) => {
                   e.preventDefault();
+                  // touch screens lock the pointer to the first letter; release it so dragging reaches other letters
+                  if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
                   setDragging(true);
                   setCursor({ r, c });
                   choose({ r, c });

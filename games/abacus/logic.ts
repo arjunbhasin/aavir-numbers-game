@@ -20,8 +20,10 @@ export function makeBeadPuzzle(rng: Rng, d: Difficulty, index: number): BeadPuzz
   const rods = d + 1;
   const value = randInt(rng, rods === 1 ? 1 : 10 ** (rods - 1), 10 ** rods - 1);
   // easily confused numbers: one bead off, or the 5-bead missing
-  const near = [value + 1, value - 1, value + 5, value - 5, value + 10, value - 10];
-  return { mode: index % 2 === 0 ? "read" : "set", rods, value, options: numberOptions(rng, value, near, 3, 0) };
+  const max = 10 ** rods - 1;
+  const near = [value + 1, value - 1, value + 5, value - 5, value + 10, value - 10].filter((n) => n <= max);
+  const options = numberOptions(rng, value, near, 3, 0).map((n) => (n > max ? value - (n - value) : n));
+  return { mode: index % 2 === 0 ? "read" : "set", rods, value, options };
 }
 
 /* ---------- Friend Finder ---------- */

@@ -71,7 +71,14 @@ export default function CrosswordPuzzle({ seed, difficulty, onSolved }: PuzzlePr
     if (solved) return;
     const cells = cellsOf(entry);
     let p = pos;
-    while (p < cells.length && lockedCell(cells[p].r, cells[p].c)) p++;
+    // a solved square shared with another word: typing its own letter just steps over it
+    while (p < cells.length && lockedCell(cells[p].r, cells[p].c)) {
+      if (solution.get(key(cells[p].r, cells[p].c)) === ch) {
+        setPos(Math.min(p + 1, cells.length - 1));
+        return;
+      }
+      p++;
+    }
     if (p >= cells.length) return;
     const next = { ...typed, [key(cells[p].r, cells[p].c)]: ch };
     setTyped(next);
@@ -179,6 +186,7 @@ export default function CrosswordPuzzle({ seed, difficulty, onSolved }: PuzzlePr
                 setPos(0);
               }}
               aria-label={`Clue ${e.num} ${e.dir}`}
+              data-word={e.word}
               className={`flex items-center gap-2 rounded-2xl px-3 py-2 ${done.includes(i) ? "bg-grass/25" : i === active ? "bg-[#fff1a8] ring-4 ring-sun" : "bg-white/85"}`}
             >
               <span className="text-lg font-bold text-ink w-5">{e.num}</span>
