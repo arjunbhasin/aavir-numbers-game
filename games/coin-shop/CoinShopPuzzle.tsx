@@ -1,5 +1,6 @@
 "use client";
 
+import KeyboardHint from "@/components/ui/KeyboardHint";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
 import { Coin, ToyArt } from "@/components/math/AddArt";
@@ -163,9 +164,9 @@ export default function CoinShopPuzzle({ seed, difficulty, onSolved }: PuzzlePro
           Take one back
         </Button>
       </div>
-      <p className="hidden md:block text-ink-soft">
+      <KeyboardHint>
         Keys: {p.coins.map((v) => (v === 10 ? "0 = 10" : v)).join(", ")} add coins · Backspace takes one back · Enter pays
-      </p>
+      </KeyboardHint>
     </div>
   );
 }

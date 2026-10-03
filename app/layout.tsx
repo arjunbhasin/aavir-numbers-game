@@ -8,6 +8,10 @@ const fredoka = Fredoka({ subsets: ["latin"], variable: "--font-fredoka", weight
 export const metadata: Metadata = {
   title: "Aavir's Puzzle Park",
   description: "Friendly logic games and pattern puzzles for young thinkers.",
+  applicationName: "Puzzle Park",
+  // "Add to Home Screen" on iPad opens it full screen like an app
+  appleWebApp: { capable: true, title: "Puzzle Park", statusBarStyle: "default" },
+  formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {
@@ -16,6 +20,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   themeColor: "#bfe6ff",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

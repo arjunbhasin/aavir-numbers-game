@@ -43,7 +43,10 @@ function Row({ input, machines, output }: { input: ReactNode; machines: ReactNod
   );
 }
 
-const machine = (text: string, busy = false) => <MachineBox label={text} busy={busy} className="w-32 sm:w-44 shrink-0" />;
+/** Puzzles that stack several rows use smaller machines so the answers stay on screen. */
+const machine = (text: string, busy = false, small = false) => (
+  <MachineBox label={text} busy={busy} className={`${small ? "w-20 sm:w-24" : "w-32 sm:w-44"} shrink-0`} />
+);
 
 export default function MachinePuzzle({ seed, difficulty, onSolved }: PuzzleProps) {
   const p = useMemo(() => makeMachinePuzzle(makeRng(seed), difficulty), [seed, difficulty]);
@@ -72,9 +75,9 @@ export default function MachinePuzzle({ seed, difficulty, onSolved }: PuzzleProp
     case "rule":
       question = "What does the machine do?";
       picture = (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           {p.examples.map(([i, o]) => (
-            <Row key={i} input={<Ball>{i}</Ball>} machines={[machine(solved ? label(p.answer) : "?")]} output={<Ball>{o}</Ball>} />
+            <Row key={i} input={<Ball>{i}</Ball>} machines={[machine(solved ? label(p.answer) : "?", false, true)]} output={<Ball>{o}</Ball>} />
           ))}
         </div>
       );
@@ -114,9 +117,9 @@ export default function MachinePuzzle({ seed, difficulty, onSolved }: PuzzleProp
       question = "One machine that does the same as both. Which one?";
       picture = (
         <div className="flex flex-col items-center gap-4">
-          <Row input={<Ball>?</Ball>} machines={[machine(label(p.rules[0])), machine(label(p.rules[1]))]} output={<Ball>?</Ball>} />
+          <Row input={<Ball>?</Ball>} machines={[machine(label(p.rules[0]), false, true), machine(label(p.rules[1]), false, true)]} output={<Ball>?</Ball>} />
           <span className="text-2xl font-bold text-ink-soft">is the same as</span>
-          <Row input={<Ball>?</Ball>} machines={[machine(solved ? label(p.answer) : "?")]} output={<Ball>?</Ball>} />
+          <Row input={<Ball>?</Ball>} machines={[machine(solved ? label(p.answer) : "?", false, true)]} output={<Ball>?</Ball>} />
         </div>
       );
       choices = p.options.map((r) => ({ value: r, label: label(r) }));

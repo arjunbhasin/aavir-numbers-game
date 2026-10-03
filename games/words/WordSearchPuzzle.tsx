@@ -140,7 +140,7 @@ export default function WordSearchPuzzle({ seed, difficulty, onSolved }: PuzzleP
             </div>
           );
         })}
-        <p className="hidden lg:block text-ink-soft max-w-48">Tap the first letter, then the last. Or drag across the word.</p>
+        <p className="text-ink-soft max-w-48 text-center lg:text-left">Tap the first letter, then the last. Or drag across the word.</p>
       </div>
     </div>
   );

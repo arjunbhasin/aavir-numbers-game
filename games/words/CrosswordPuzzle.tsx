@@ -1,5 +1,6 @@
 "use client";
 
+import KeyboardHint from "@/components/ui/KeyboardHint";
 import { motion } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
 import type { PuzzleProps } from "@/components/shapes/PatternGame";
@@ -224,7 +225,7 @@ export default function CrosswordPuzzle({ seed, difficulty, onSolved }: PuzzlePr
           ⌫
         </button>
       </div>
-      <p className="hidden md:block text-ink-soft">Type letters · Backspace deletes · arrows move · Tab goes to the next word</p>
+      <KeyboardHint touch="Tap a square, then tap the letters. ⌫ deletes.">Type letters · Backspace deletes · arrows move · Tab goes to the next word</KeyboardHint>
     </div>
   );
 }

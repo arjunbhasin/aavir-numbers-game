@@ -1,5 +1,6 @@
 "use client";
 
+import KeyboardHint from "@/components/ui/KeyboardHint";
 import { useMemo, useState } from "react";
 import Abacus, { useAbacusKeys } from "@/components/abacus/Abacus";
 import Choices from "@/components/math/Choices";
@@ -46,7 +47,7 @@ export default function BeadReaderPuzzle({ seed, difficulty, onSolved, index }: 
         <>
           <p className="text-2xl font-semibold text-ink">What number does the abacus show?</p>
           <div className="w-[min(90vw,calc(var(--rods)*7rem+2rem))]" style={{ ["--rods" as string]: p.rods }}>
-            <Abacus value={p.value} rods={p.rods} />
+            <Abacus value={p.value} rods={p.rods} reserve={400} />
           </div>
           <p className={`text-xl font-semibold min-h-7 ${message?.good ? "text-grass-dark" : "text-coral-dark"}`}>{message?.text}</p>
           <Choices
@@ -71,7 +72,7 @@ export default function BeadReaderPuzzle({ seed, difficulty, onSolved, index }: 
             Show <span className="text-4xl font-bold text-grass-dark">{p.value}</span> on the abacus
           </p>
           <div className="w-[min(90vw,calc(var(--rods)*7rem+2rem))]" style={{ ["--rods" as string]: p.rods }}>
-            <Abacus value={value} rods={p.rods} onChange={solved ? undefined : setValue} selected={selected} onSelect={setSelected} />
+            <Abacus value={value} rods={p.rods} onChange={solved ? undefined : setValue} selected={selected} onSelect={setSelected} reserve={420} />
           </div>
           <p className={`text-xl font-semibold min-h-7 text-center ${message?.good ? "text-grass-dark" : message ? "text-coral-dark" : "text-ink-soft"}`}>
             {message?.text ?? "Tap the beads to move them."}
@@ -84,7 +85,7 @@ export default function BeadReaderPuzzle({ seed, difficulty, onSolved, index }: 
               Clear
             </Button>
           </div>
-          <p className="hidden md:block text-ink-soft">← → pick a rod · ↑ ↓ move a bottom bead · Space moves the top bead · Enter checks</p>
+          <KeyboardHint>← → pick a rod · ↑ ↓ move a bottom bead · Space moves the top bead · Enter checks</KeyboardHint>
         </>
       )}
     </div>

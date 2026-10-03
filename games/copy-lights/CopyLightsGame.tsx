@@ -1,5 +1,6 @@
 "use client";
 
+import KeyboardHint from "@/components/ui/KeyboardHint";
 import { motion } from "motion/react";
 import { useState } from "react";
 import Button from "@/components/ui/Button";
@@ -156,7 +157,7 @@ export default function CopyLightsGame() {
           Change level
         </Button>
       </div>
-      <p className="hidden md:block text-ink-soft">Enter starts · use the arrow keys, or tap the lights</p>
+      <KeyboardHint touch="Tap the lights in the same order.">Enter starts · use the arrow keys, or tap the lights</KeyboardHint>
       <WinOverlay open={won !== null} stars={won ?? 0} detail={`${goal} lights in a row!`} onAgain={() => start(mode)} onLevels={() => setMode(null)} />
     </div>
   );

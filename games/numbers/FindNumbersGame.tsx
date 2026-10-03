@@ -82,7 +82,7 @@ export default function FindNumbersGame() {
         </span>
       </div>
 
-      <div className="relative w-full max-w-4xl aspect-[3/2] rounded-[2rem] bg-cream shadow-[inset_0_0_0_6px_#fff,0_8px_0_rgba(0,0,0,.08)]">
+      <div className="relative w-[min(100%,56rem,calc((100dvh-300px)*1.5))] min-w-[min(100%,30rem)] aspect-[3/2] rounded-[2rem] bg-cream shadow-[inset_0_0_0_6px_#fff,0_8px_0_rgba(0,0,0,.08)]">
         {nums.map((n) => {
           const found = n.value < next;
           return (
@@ -92,7 +92,7 @@ export default function FindNumbersGame() {
               onClick={() => pick(n.value)}
               animate={wrong === n.value ? { x: [0, -8, 8, -4, 4, 0] } : { x: 0 }}
               transition={{ duration: 0.35 }}
-              className={`absolute -translate-x-1/2 -translate-y-1/2 font-bold leading-none rounded-full px-1.5 py-1
+              className={`absolute -translate-x-1/2 -translate-y-1/2 font-bold leading-none rounded-full min-w-11 min-h-11 px-1.5 grid place-items-center
                 ${found ? "bg-grass text-white" : "hover:bg-white/70"}`}
               style={{
                 left: `${n.x}%`,

@@ -36,6 +36,7 @@ export default function Abacus({
   className = "w-full",
   labels = rods > 1,
   dim = false,
+  reserve,
 }: {
   value: number;
   rods: number;
@@ -45,6 +46,8 @@ export default function Abacus({
   className?: string;
   labels?: boolean;
   dim?: boolean;
+  /** px of screen height needed for everything else; the abacus shrinks to fit the rest */
+  reserve?: number;
 }) {
   const state = toRods(value, rods);
   const W = rods * COL + PAD * 2;
@@ -59,6 +62,7 @@ export default function Abacus({
     <svg
       viewBox={`0 0 ${W} ${H + (labels ? 26 : 0)}`}
       className={`${className} select-none ${dim ? "opacity-40" : ""}`}
+      style={reserve ? { maxHeight: `max(220px, calc(100dvh - ${reserve}px))` } : undefined}
       role="img"
       aria-label={`Abacus showing ${value}`}
     >
@@ -79,6 +83,8 @@ export default function Abacus({
               onClick={() => set(i, { ...rod, heaven: !rod.heaven })}
               style={{ cursor: onChange ? "pointer" : "default" }}
             >
+              {/* a bigger invisible hit area than the bead itself, for small fingers */}
+              <rect x={x - COL / 2 + 3} y={-20} width={COL - 6} height={40} fill="transparent" />
               <path d={BEAD} transform={`translate(${x} 0)`} fill={rod.heaven ? "#ff6b6b" : "#ffb3ab"} stroke="#d94848" strokeWidth="2.5" />
             </motion.g>
             {/* earth beads, index 0 nearest the beam */}
@@ -91,6 +97,7 @@ export default function Abacus({
                 onClick={() => set(i, { ...rod, earth: b < rod.earth ? b : b + 1 })}
                 style={{ cursor: onChange ? "pointer" : "default" }}
               >
+                <rect x={x - COL / 2 + 3} y={-EARTH_STEP / 2} width={COL - 6} height={EARTH_STEP} fill="transparent" />
                 <path d={BEAD} transform={`translate(${x} 0)`} fill={b < rod.earth ? "#ffc93c" : "#ffe7a3"} stroke="#d9a200" strokeWidth="2.5" />
               </motion.g>
             ))}

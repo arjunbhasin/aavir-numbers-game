@@ -58,7 +58,7 @@ export default function WhichFormulaPuzzle({ seed, difficulty, onSolved }: Puzzl
         {p.a} + {p.d} {solved && step === steps.length - 1 ? `= ${p.a + p.d}` : ""}
       </p>
       <div className="w-[min(70vw,16rem)]">
-        <Abacus value={shown} rods={2} />
+        <Abacus value={shown} rods={2} reserve={430} />
       </div>
       <div className="flex gap-2 min-h-12">
         {solved &&

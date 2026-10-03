@@ -111,27 +111,30 @@ test("Friend Pairs: cards match when they make the target", async ({ page }) => 
   const all = page.locator("main .grid > button");
   const n = await all.count();
   const seen: number[] = [];
+  const done = new Set<number>();
+  // peek at every card two at a time and remember its number
   for (let i = 0; i < n; i += 2) {
     await all.nth(i).click();
     await all.nth(i + 1).click();
+    await expect(all.nth(i)).not.toHaveAttribute("aria-label", /face down/);
+    await expect(all.nth(i + 1)).not.toHaveAttribute("aria-label", /face down/);
     seen[i] = Number(await all.nth(i).getAttribute("aria-label"));
     seen[i + 1] = Number(await all.nth(i + 1).getAttribute("aria-label"));
-    await page.waitForTimeout(1150);
+    if (seen[i] + seen[i + 1] === 5) {
+      done.add(i).add(i + 1);
+      await page.waitForTimeout(500);
+    } else {
+      await expect(all.nth(i)).toHaveAttribute("aria-label", /face down/, { timeout: 4000 });
+    }
   }
-  const done = new Set<number>();
+  // then match the rest from memory
   for (let i = 0; i < n; i++) {
     if (done.has(i)) continue;
-    if (!(await all.nth(i).getAttribute("aria-label"))?.includes("face down")) {
-      done.add(i);
-      continue;
-    }
-    const j = seen.findIndex((v, k) => k !== i && !done.has(k) && v + seen[i] === 5 && (k > i));
-    if (j === -1) continue;
+    const j = seen.findIndex((v, k) => k !== i && !done.has(k) && v + seen[i] === 5);
     await all.nth(i).click();
     await all.nth(j).click();
-    done.add(i);
-    done.add(j);
-    await page.waitForTimeout(700);
+    done.add(i).add(j);
+    await page.waitForTimeout(600);
   }
   await expect(page.getByRole("dialog", { name: "Level complete" })).toBeVisible({ timeout: 4000 });
 });
@@ -145,8 +148,9 @@ test("Mini Crossword: typing every answer completes the puzzle", async ({ page }
     const clue = clues.nth(i);
     const word = (await clue.getAttribute("data-word"))!;
     await clue.click();
-    await page.keyboard.type(word);
-    await page.waitForTimeout(150);
+    await expect(clue).toHaveClass(/ring-sun|bg-grass/);
+    await page.keyboard.type(word, { delay: 30 });
+    await page.waitForTimeout(250);
   }
   await expect(page.getByText("Crossword complete!")).toBeVisible();
   await expect(page.getByLabel("Puzzle 2 of 3")).toBeVisible({ timeout: 4000 });

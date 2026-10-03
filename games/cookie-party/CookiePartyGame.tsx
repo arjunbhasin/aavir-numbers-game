@@ -1,5 +1,6 @@
 "use client";
 
+import KeyboardHint from "@/components/ui/KeyboardHint";
 import { LayoutGroup, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { ANIMALS, Animal, Cookie, Dog, Plate } from "@/components/math/Art";
@@ -220,9 +221,9 @@ function ShareView({ level, onWin, onLevels }: { level: ShareLevel } & Omit<Leve
             Levels
           </Button>
         </div>
-        <p className="hidden md:block text-ink-soft">
+        <KeyboardHint>
           Tap a friend, or press 1–{level.plates}{level.dealButton ? " · Space gives one to everyone" : ""}
-        </p>
+        </KeyboardHint>
       </div>
     </LayoutGroup>
   );

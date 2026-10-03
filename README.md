@@ -57,6 +57,13 @@ The home page groups games into six sections with sticky tabs, shows each game's
 - Abacus: ← → pick a rod, ↑ ↓ move a bottom bead, Space moves the top (5) bead, Enter checks. Beads can also be tapped.
 - Word games: type letters on the keyboard or tap the tiles.
 
+## Tablets
+
+- Every game is checked in tablet portrait and landscape by the browser tests: no sideways scrolling, and the main buttons stay on screen.
+- On touch screens an arrow pad appears (beside the board in landscape, below in portrait), keyboard tips are hidden, and tap targets are finger-sized.
+- Double-tap zoom and long-press text selection are turned off so taps feel like an app.
+- On an iPad, Share → "Add to Home Screen" installs it with its own icon and opens it full screen.
+
 ## Tech
 
 Next.js 16 (App Router, all pages static), React 19, Tailwind CSS 4, Motion, Zustand, Vitest, Playwright, Bun.

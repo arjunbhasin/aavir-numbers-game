@@ -84,6 +84,8 @@ test("Pair Match: a mismatch flips back, the board can be won", async ({ page })
     await page.getByRole("button", { name: `Card ${i + 1}, face down` }).click();
     await page.getByRole("button", { name: `Card ${i + 2}, face down` }).click();
     const all = page.locator("main .grid > button");
+    await expect(all.nth(i)).not.toHaveAttribute("aria-label", /face down/);
+    await expect(all.nth(i + 1)).not.toHaveAttribute("aria-label", /face down/);
     seen[i] = (await all.nth(i).getAttribute("aria-label"))!;
     seen[i + 1] = (await all.nth(i + 1).getAttribute("aria-label"))!;
     await page.waitForTimeout(1200);

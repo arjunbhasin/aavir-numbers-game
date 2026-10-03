@@ -20,7 +20,8 @@ export default function DPad({ onMove, className = "" }: { onMove: (d: Dir) => v
   );
   return (
     <div
-      className={`grid gap-2 select-none ${className}`}
+      // callers may pass their own display (e.g. "hidden lg:grid"); otherwise it's a grid
+      className={`${/\b(hidden|grid)\b/.test(className) ? "" : "grid"} gap-2 select-none ${className}`}
       style={{ gridTemplateAreas: `". up ." "left . right" ". down ."`, touchAction: "manipulation" }}
     >
       {btn("up", "up")}

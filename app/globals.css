@@ -51,6 +51,7 @@
 
 html, body {
   min-height: 100%;
+  -webkit-text-size-adjust: 100%;
 }
 
 html {
@@ -68,6 +69,13 @@ body {
   background-attachment: fixed;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
+  /* tablets: no double-tap zoom, no text selection or callout menus from long presses */
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  /* keep clear of the iPad home indicator and rounded corners when added to the home screen */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 button {

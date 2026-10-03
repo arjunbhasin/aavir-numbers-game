@@ -1,5 +1,6 @@
 "use client";
 
+import KeyboardHint from "@/components/ui/KeyboardHint";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Board, { type Sprite } from "@/components/grid/Board";
@@ -203,7 +204,7 @@ function RobotPathLevel({ level: index, onWin, onLevels }: LevelProps) {
           </Button>
         </div>
       </div>
-      {!touch && <p className="hidden md:block text-ink-soft mt-3">Arrow keys add steps · Backspace removes · Enter runs</p>}
+      <KeyboardHint className="mt-3">Arrow keys add steps · Backspace removes · Enter runs</KeyboardHint>
     </div>
   );
 }

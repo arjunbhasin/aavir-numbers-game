@@ -38,7 +38,7 @@ function GardenLevel({ level, onWin, onLevels }: LevelProps) {
   const [message, setMessage] = useState<{ text: string; good: boolean } | null>(null);
   const [shake, setShake] = useState(0);
   const touch = useIsTouch();
-  const cell = useCellSize(GARDEN_ROWS, GARDEN_COLS, touch, 340);
+  const cell = useCellSize(GARDEN_ROWS, GARDEN_COLS, false, touch ? 300 : 340, { width: 230, extraHeight: 90 });
   const later = useLater();
   const done = found.length === shapes.length;
   const count = size.rows * size.cols;
@@ -131,6 +131,7 @@ function GardenLevel({ level, onWin, onLevels }: LevelProps) {
         setMessage(null);
       }}
       onLevels={onLevels}
+      dpad={false}
       board={
         <div className="flex flex-col items-center gap-3">
           <div className="flex items-center gap-3 px-5 py-2 rounded-2xl bg-white/85">
@@ -191,8 +192,8 @@ function GardenLevel({ level, onWin, onLevels }: LevelProps) {
           />
         </div>
       }
-      extra={
-        <div className="flex flex-col items-center gap-3 mt-4 w-full">
+      side={
+        <div className="flex flex-col items-center gap-3 mt-2 lg:mt-14 w-full lg:w-[220px]">
           <p className={`text-xl font-semibold min-h-7 text-center ${message?.good ? "text-grass-dark" : "text-coral-dark"}`}>
             {message?.text ?? "Make a rectangle that uses every seedling."}
           </p>
@@ -204,14 +205,14 @@ function GardenLevel({ level, onWin, onLevels }: LevelProps) {
               Turn
             </Button>
           </div>
-          <div className="flex flex-wrap justify-center gap-3 mt-1">
+          <div className="flex flex-wrap justify-center gap-3 mt-1 lg:max-w-[220px]">
             {shapes.map((_, i) => {
               const f = found[i];
               return (
                 <motion.div
                   key={i}
                   layout
-                  className={`min-w-28 min-h-28 rounded-2xl p-3 flex flex-col items-center justify-center gap-2 ${f ? "bg-white shadow-[0_5px_0_#c9d6e6]" : "border-4 border-dashed border-ink-soft/25 bg-white/40"}`}
+                  className={`min-w-24 min-h-24 rounded-2xl p-2.5 flex flex-col items-center justify-center gap-2 ${f ? "bg-white shadow-[0_5px_0_#c9d6e6]" : "border-4 border-dashed border-ink-soft/25 bg-white/40"}`}
                 >
                   {f ? (
                     <>
@@ -227,7 +228,7 @@ function GardenLevel({ level, onWin, onLevels }: LevelProps) {
               );
             })}
           </div>
-          {!touch && <p className="hidden md:block text-ink-soft">Arrows change the rows · Enter plants · T turns it around</p>}
+          <p className="text-ink-soft text-center">{touch ? "Tap a square to make a rectangle that size." : "Arrows change the rows · Enter plants · T turns it around"}</p>
         </div>
       }
     />

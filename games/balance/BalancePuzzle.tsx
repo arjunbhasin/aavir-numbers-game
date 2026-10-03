@@ -20,8 +20,8 @@ const COLORS = [
 function Pan({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col items-center">
-      <div className="flex items-end justify-center gap-3 min-h-28 px-3">{children}</div>
-      <div className="w-[clamp(9rem,28vw,15rem)] h-4 rounded-b-full bg-[#8a94a8]" />
+      <div className="flex items-end justify-center gap-2 min-h-28 px-1">{children}</div>
+      <div className="w-[clamp(8rem,24vw,13rem)] h-4 rounded-b-full bg-[#8a94a8]" />
     </div>
   );
 }
@@ -54,27 +54,27 @@ export default function BalancePuzzle({ seed, difficulty, onSolved }: PuzzleProp
 
   return (
     <div className="flex flex-col items-center gap-5 w-full">
-      <div className="relative w-full max-w-3xl h-80 select-none">
+      <div className="relative w-full max-w-3xl h-80 select-none overflow-x-clip">
         {/* stand */}
         <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-40 h-5 rounded-full bg-[#7b8db8]" />
         <div className="absolute left-1/2 -translate-x-1/2 bottom-4 w-5 h-52 rounded-t-full bg-[#93a6d3]" />
         {/* beam with pans */}
         <motion.div
-          className="absolute left-[6%] right-[6%] top-14 origin-center"
+          className="absolute left-[18%] right-[18%] top-14 origin-center"
           animate={{ rotate: t * 8 }}
           transition={{ type: "spring", stiffness: 90, damping: 9 }}
         >
           <div className="h-4 rounded-full bg-[#5a6785]" />
           <div className="absolute left-1/2 -translate-x-1/2 -top-3 w-8 h-8 rounded-full bg-sun border-4 border-sun-dark" />
-          <motion.div className="absolute left-0 top-4 -translate-x-[15%]" animate={{ rotate: -t * 8 }}>
+          <motion.div className="absolute left-0 top-4 -translate-x-1/2" animate={{ rotate: -t * 8 }}>
             <div className="w-1 h-10 mx-auto bg-[#8a94a8]" />
             <Pan>
               {p.left.map((n, i) => (
-                <Blocks key={i} n={n} color={COLORS[i][0]} dark={COLORS[i][1]} />
+                <Blocks key={i} n={n} color={COLORS[i][0]} dark={COLORS[i][1]} size={p.left.length > 2 ? 10 : 14} />
               ))}
             </Pan>
           </motion.div>
-          <motion.div className="absolute right-0 top-4 translate-x-[15%]" animate={{ rotate: -t * 8 }}>
+          <motion.div className="absolute right-0 top-4 translate-x-1/2" animate={{ rotate: -t * 8 }}>
             <div className="w-1 h-10 mx-auto bg-[#8a94a8]" />
             <Pan>
               <Blocks n={p.right[0]} color={COLORS[3][0]} dark={COLORS[3][1]} />

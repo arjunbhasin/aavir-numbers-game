@@ -21,6 +21,8 @@ export default function PlayArea({
   par,
   locked = false,
   extra,
+  side,
+  dpad = true,
 }: {
   board: ReactNode;
   onMove?: (d: Dir) => void;
@@ -33,17 +35,25 @@ export default function PlayArea({
   par?: number;
   locked?: boolean;
   extra?: ReactNode;
+  /** shown beside the board on wide screens, below it otherwise */
+  side?: ReactNode;
+  /** show the on-screen arrow pad on touch screens */
+  dpad?: boolean;
 }) {
   const touch = useIsTouch();
+  const showPad = touch && dpad && !!onMove;
   useGameKeys({ enabled: !locked, onMove, onUndo, onRestart, onEnter });
 
   return (
     <div className="flex flex-col items-center w-full">
       <div className="flex flex-col lg:flex-row items-center justify-center gap-6">
         {board}
-        {touch && onMove && <DPad onMove={(d) => !locked && onMove(d)} />}
+        {side}
+        {showPad && <DPad className="hidden lg:grid" onMove={(d) => !locked && onMove!(d)} />}
       </div>
+      {/* in portrait, game info sits right under the board and the arrow pad comes after it */}
       {extra}
+      {showPad && <DPad className="grid lg:hidden mt-4" onMove={(d) => !locked && onMove!(d)} />}
       <div className="flex flex-wrap items-center justify-center gap-3 mt-5">
         {onUndo && (
           <Button accent="white" onClick={onUndo} disabled={!canUndo || locked} icon={<UndoIcon className="w-7 h-7" />}>

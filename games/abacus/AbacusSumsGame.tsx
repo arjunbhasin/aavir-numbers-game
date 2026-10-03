@@ -1,5 +1,6 @@
 "use client";
 
+import KeyboardHint from "@/components/ui/KeyboardHint";
 import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useState } from "react";
 import Abacus, { useAbacusKeys } from "@/components/abacus/Abacus";
@@ -92,7 +93,7 @@ function SumsLevel({ level, onWin, onLevels }: LevelProps) {
         </motion.p>
       </AnimatePresence>
       <div className="w-[min(90vw,calc(var(--rods)*7rem+2rem))]" style={{ ["--rods" as string]: sum.rods }}>
-        <Abacus value={value} rods={sum.rods} onChange={busy ? undefined : setValue} selected={selected} onSelect={setSelected} />
+        <Abacus value={value} rods={sum.rods} onChange={busy ? undefined : setValue} selected={selected} onSelect={setSelected} reserve={430} />
       </div>
       <p className={`text-xl font-semibold min-h-7 text-center ${message?.good ? "text-grass-dark" : message ? "text-coral-dark" : "text-ink-soft"}`}>
         {message?.text ?? (hint ? hintText() : `Start with ${sum.terms[0]}, then add ${sum.terms.slice(1).join(", then ")}.`)}
@@ -111,7 +112,7 @@ function SumsLevel({ level, onWin, onLevels }: LevelProps) {
           Levels
         </Button>
       </div>
-      <p className="hidden md:block text-ink-soft">← → pick a rod · ↑ ↓ move a bottom bead · Space moves the top bead · Enter checks</p>
+      <KeyboardHint touch="Tap a bead to move it.">← → pick a rod · ↑ ↓ move a bottom bead · Space moves the top bead · Enter checks</KeyboardHint>
     </div>
   );
 }
