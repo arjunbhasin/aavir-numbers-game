@@ -66,3 +66,9 @@ export function playSound(name: SoundName) {
   if (useProgress.getState().muted) return;
   SOUNDS[name]();
 }
+
+/** A single musical note (Copy the Lights pads). */
+export function playTone(freq: number, seconds = 0.35) {
+  if (useProgress.getState().muted) return;
+  tone(freq, 0, seconds, "triangle", 0.14);
+}

@@ -53,6 +53,7 @@ html, body {
 
 html {
   background: var(--color-sky-bottom);
+  scroll-behavior: smooth;
 }
 
 body {

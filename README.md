@@ -15,6 +15,15 @@ Friendly logic games and pattern puzzles for 6–7 year olds. Big buttons, cheer
 | | What's Next? | Which shape comes next in the row? |
 | | Odd One Out | Find the shape that breaks the rule. |
 | | Magic Square | Rows follow one rule and columns another. Fill the empty box. |
+| Memory Lane | Pair Match | Flip two cards at a time and find every pair. Hard matches numbers to dots. |
+| | Copy the Lights | Four lights on the arrow keys play a tune; copy it as it grows longer. |
+| | What's Missing? | Remember the toys on the tray. One hides; which one? |
+| | Footprints | Watch the robot walk a path, then walk it yourself. |
+| Add & Take Away | Make Ten | Pop pairs of cards that add up to 10 (or 20). Ten-frames help on Easy. |
+| | Balance Scale | Pick the block that makes both sides weigh the same. The scale tips to show too heavy or too light. |
+| | Coin Shop | Pay the exact price with coins of 1, 2, 5 and 10. Hard mode counts change. |
+| | Monster Munch | Take away, "how many were eaten?" and "how many more?" with a hungry monster. |
+| | Sum Path | Grid puzzle: collect number stones to reach the flag with the exact total. Later levels need take-away stones. 12 levels. |
 | Times & Share | Bug Count Flash | Peek at ladybugs in groups or rows, then say how many. Builds "seeing" groups. |
 | | Bunny Hops | Hop along a number line in equal jumps, dodge puddles, predict how many hops. Skip counting and division. 12 levels. |
 | | Garden Builder | Plant all the seedlings as a rectangle and find every shape. Arrays, turning (3×4 = 4×3), and "lonely" prime numbers. 12 levels. |
@@ -24,12 +33,14 @@ Friendly logic games and pattern puzzles for 6–7 year olds. Big buttons, cheer
 | Number Fun | Missing Numbers | Put lost numbers back into a 1–20, 1–50 or 1–100 grid. |
 | | Find Numbers | Find 1, 2, 3… hidden among scattered numbers. |
 
-Pattern games, Bug Count Flash and Magic Machine come in Easy, Medium and Hard. Each round is five fresh puzzles made by a generator, so they never run out.
+Pattern, memory and most math games come in Easy, Medium and Hard. Puzzle-style games (Box Push, Sum Path, Packing Day and others) have numbered levels instead.
+
+The home page groups games into six sections with sticky tabs, shows each game's stars as a progress bar, and has a "Keep playing" row for recently opened games. Each round is five fresh puzzles made by a generator, so they never run out.
 
 ## Controls
 
 - Arrow keys or WASD move. `U` (or Backspace) undoes, `R` restarts, Enter continues.
-- Answer choices: click, press `A`–`E` or `1`–`5`, or use the arrows and Enter.
+- Answer choices: click, use the arrows and Enter, or type the number answer. Shape answers use `A`–`E` or `1`–`5`.
 - On a touch screen an arrow pad appears, and you can swipe on the board.
 
 ## Tech

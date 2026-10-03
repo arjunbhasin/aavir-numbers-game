@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Bunny Hops · Aavir's Puzzle Park" }
 
 export default function Page() {
   return (
-    <GameShell title="Bunny Hops" accent="sun" hint="Hop along the number line in equal jumps.">
+    <GameShell id="bunny-hops" hint="Hop along the number line in equal jumps.">
       <BunnyHopsGame />
     </GameShell>
   );

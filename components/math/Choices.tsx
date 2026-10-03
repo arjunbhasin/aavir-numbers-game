@@ -1,11 +1,12 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useGameKeys } from "@/lib/input";
 
 /**
- * Big answer buttons. Tap/click, press 1-6, or use ← → and Enter.
+ * Big answer buttons. Tap/click, or use ← → and Enter.
+ * Number answers can be typed (type 1 then 2 for 12); other answers use keys 1-6 by position.
  * Wrong answers shake and fade, and can't be picked again.
  */
 export default function Choices<T>({
@@ -24,19 +25,45 @@ export default function Choices<T>({
   shadow?: string;
 }) {
   const [focus, setFocus] = useState(-1);
+  const typed = useRef({ text: "", timer: undefined as ReturnType<typeof setTimeout> | undefined });
+  const numeric = choices.every((c) => typeof c.value === "number");
+
+  useEffect(() => () => clearTimeout(typed.current.timer), []);
 
   useEffect(() => {
+    const pickIndex = (i: number) => {
+      if (i >= 0 && i < choices.length && !wrong.includes(i)) onPick(choices[i].value, i);
+    };
     const onKey = (e: KeyboardEvent) => {
-      if (disabled || e.metaKey || e.ctrlKey || !/^[1-6]$/.test(e.key)) return;
-      const i = Number(e.key) - 1;
-      if (i < choices.length && !wrong.includes(i)) {
-        e.preventDefault();
-        onPick(choices[i].value, i);
+      if (disabled || e.metaKey || e.ctrlKey || !/^[0-9]$/.test(e.key)) return;
+      e.preventDefault();
+      if (!numeric) {
+        pickIndex(Number(e.key) - 1);
+        return;
+      }
+      const t = typed.current;
+      clearTimeout(t.timer);
+      t.text += e.key;
+      const values = choices.map((c) => String(c.value));
+      const exact = values.indexOf(t.text);
+      const longer = values.some((v) => v !== t.text && v.startsWith(t.text));
+      if (exact !== -1 && !longer) {
+        t.text = "";
+        pickIndex(exact);
+      } else if (!longer) {
+        t.text = ""; // typed a number that isn't an option
+      } else {
+        // wait a moment in case a second digit is coming (1 → 12)
+        t.timer = setTimeout(() => {
+          const i = values.indexOf(t.text);
+          t.text = "";
+          pickIndex(i);
+        }, 700);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [choices, onPick, disabled, wrong]);
+  }, [choices, onPick, disabled, wrong, numeric]);
 
   useGameKeys({
     enabled: !disabled,

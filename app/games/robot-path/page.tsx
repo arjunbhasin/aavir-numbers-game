@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Robot Path · Aavir's Puzzle Park" }
 
 export default function Page() {
   return (
-    <GameShell title="Robot Path" accent="mint" hint="Plan all the steps, then press Go! Collect the stars, then reach the battery.">
+    <GameShell id="robot-path" hint="Plan all the steps, then press Go! Collect the stars, then reach the battery.">
       <RobotPathGame />
     </GameShell>
   );

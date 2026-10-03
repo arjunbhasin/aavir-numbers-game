@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Cookie Party · Aavir's Puzzle Park"
 
 export default function Page() {
   return (
-    <GameShell title="Cookie Party" accent="berry" hint="Share fairly. Leftovers go to the dog!">
+    <GameShell id="cookie-party" hint="Share fairly. Leftovers go to the dog!">
       <CookiePartyGame />
     </GameShell>
   );

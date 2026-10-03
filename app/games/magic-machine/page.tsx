@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Magic Machine · Aavir's Puzzle Park
 
 export default function Page() {
   return (
-    <GameShell title="Magic Machine" accent="grape" hint="Numbers go in, numbers come out. What does the machine do?">
+    <GameShell id="magic-machine" hint="Numbers go in, numbers come out. What does the machine do?">
       <MagicMachineGame />
     </GameShell>
   );

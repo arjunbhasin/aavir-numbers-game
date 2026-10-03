@@ -1,5 +1,6 @@
 import { Crate, KeySprite, Penguin, Robot } from "@/components/grid/Sprites";
 import { Carton, Cookie, Flower, HopBunny, Ladybug, MachineBox } from "@/components/math/Art";
+import { Coin, Monster, Stone } from "@/components/math/AddArt";
 
 const W = "#ffffff";
 const INK = "#26324a";
@@ -84,6 +85,82 @@ const FindIcon = () => (
   </svg>
 );
 
+const MakeTenIcon = () => (
+  <svg viewBox="0 0 100 100" className="w-full h-full">
+    {[
+      [8, "3", -8],
+      [52, "7", 8],
+    ].map(([x, t, r]) => (
+      <g key={t as string} transform={`rotate(${r} ${(x as number) + 20} 50)`}>
+        <rect x={x as number} y="18" width="40" height="56" rx="10" fill={W} />
+        <text x={(x as number) + 20} y="60" textAnchor="middle" fontSize="34" fontWeight="800" fill="#d98a00" fontFamily="sans-serif">
+          {t}
+        </text>
+      </g>
+    ))}
+    <text x="50" y="96" textAnchor="middle" fontSize="18" fontWeight="800" fill={W} fontFamily="sans-serif">= 10</text>
+  </svg>
+);
+
+const ScaleIcon = () => (
+  <svg viewBox="0 0 100 100" className="w-full h-full">
+    <rect x="47" y="24" width="6" height="62" rx="3" fill={W} />
+    <rect x="30" y="84" width="40" height="8" rx="4" fill={W} />
+    <rect x="10" y="22" width="80" height="6" rx="3" fill={W} />
+    <path d="M14 28 6 52h28zM86 28l-8 24h28z" fill="none" stroke={W} strokeWidth="3" />
+    <path d="M4 52h32q-2 10-16 10T4 52zM64 52h32q-2 10-16 10T64 52z" fill={W} />
+    <rect x="12" y="40" width="8" height="8" fill="#ffc93c" />
+    <rect x="21" y="40" width="8" height="8" fill="#ff7a6b" />
+    <rect x="76" y="40" width="8" height="8" fill="#5cc96b" />
+  </svg>
+);
+
+const CardsIcon = () => (
+  <svg viewBox="0 0 100 100" className="w-full h-full">
+    <rect x="8" y="16" width="38" height="52" rx="8" fill="#8253d1" transform="rotate(-10 27 42)" />
+    <text x="27" y="52" textAnchor="middle" fontSize="26" fontWeight="800" fill={W} fontFamily="sans-serif" transform="rotate(-10 27 42)">?</text>
+    <rect x="50" y="30" width="38" height="52" rx="8" fill={W} transform="rotate(8 69 56)" />
+    <circle cx="69" cy="56" r="11" fill="#ff7a6b" transform="rotate(8 69 56)" />
+  </svg>
+);
+
+const LightsIcon = () => (
+  <svg viewBox="0 0 100 100" className="w-full h-full">
+    <rect x="36" y="6" width="28" height="28" rx="8" fill="#ffe066" />
+    <rect x="66" y="36" width="28" height="28" rx="8" fill={W} />
+    <rect x="36" y="66" width="28" height="28" rx="8" fill={W} />
+    <rect x="6" y="36" width="28" height="28" rx="8" fill={W} />
+    <circle cx="50" cy="20" r="18" fill="#fff59a" opacity=".45" />
+  </svg>
+);
+
+const TrayIcon = () => (
+  <svg viewBox="0 0 100 100" className="w-full h-full">
+    <rect x="6" y="22" width="88" height="60" rx="12" fill={W} />
+    <circle cx="28" cy="42" r="10" fill="#ff6b6b" />
+    <rect x="62" y="32" width="20" height="20" rx="4" fill="#4aa3ff" />
+    <path d="M28 76l-12 0 12-18 12 18z" fill="#5cc96b" />
+    <rect x="58" y="58" width="28" height="20" rx="5" fill="none" stroke="#e8a800" strokeWidth="3" strokeDasharray="5 4" />
+    <text x="72" y="74" textAnchor="middle" fontSize="16" fontWeight="800" fill="#e8a800" fontFamily="sans-serif">?</text>
+  </svg>
+);
+
+const FeetIcon = () => (
+  <svg viewBox="0 0 100 100" className="w-full h-full">
+    {[
+      [22, 76],
+      [42, 58],
+      [36, 34],
+      [60, 22],
+      [78, 40],
+    ].map(([x, y], i) => (
+      <g key={i}>
+        <ellipse cx={x} cy={y} rx="7" ry="10" fill={W} opacity={0.5 + i * 0.12} />
+      </g>
+    ))}
+  </svg>
+);
+
 export const GAME_ICONS: Record<string, React.ReactNode> = {
   "box-push": <Crate />,
   "ice-slide": <Penguin />,
@@ -100,6 +177,15 @@ export const GAME_ICONS: Record<string, React.ReactNode> = {
   "cookie-party": <Cookie />,
   packing: <Carton capacity={4} filled={3} />,
   "magic-machine": <MachineBox label="× 2" className="w-full h-full" />,
+  "make-ten": <MakeTenIcon />,
+  balance: <ScaleIcon />,
+  "coin-shop": <Coin value={5} />,
+  "monster-munch": <Monster />,
+  "sum-path": <Stone value={3} />,
+  "pair-match": <CardsIcon />,
+  "copy-lights": <LightsIcon />,
+  "whats-missing": <TrayIcon />,
+  footprints: <FeetIcon />,
   "missing-numbers": <NumbersIcon />,
   "find-numbers": <FindIcon />,
 };

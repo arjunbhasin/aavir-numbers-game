@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "What's Next? · Aavir's Puzzle Park"
 
 export default function Page() {
   return (
-    <GameShell title="What's Next?" accent="sun" hint="Find the pattern. Which shape comes next?">
+    <GameShell id="whats-next" hint="Find the pattern. Which shape comes next?">
       <WhatsNextGame />
     </GameShell>
   );

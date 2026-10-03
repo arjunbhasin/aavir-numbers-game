@@ -1,22 +1,16 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ACCENT, type Accent } from "./accents";
+import { gameInfo } from "@/lib/catalog";
+import { ACCENT } from "./accents";
 import { HomeIcon } from "./Icons";
 import MuteToggle from "./MuteToggle";
+import VisitTracker from "./VisitTracker";
 
-export default function GameShell({
-  title,
-  accent,
-  hint,
-  children,
-}: {
-  title: string;
-  accent: Accent;
-  hint?: ReactNode;
-  children: ReactNode;
-}) {
+export default function GameShell({ id, hint, children }: { id: string; hint?: ReactNode; children: ReactNode }) {
+  const { title, accent } = gameInfo(id);
   return (
     <div className="min-h-dvh flex flex-col">
+      <VisitTracker id={id} />
       <header className="flex items-center gap-3 px-4 pt-4 pb-2 max-w-5xl w-full mx-auto">
         <Link
           href="/"

@@ -1,20 +1,27 @@
 import type { Accent } from "@/components/ui/accents";
 
+export type SectionId = "logic" | "patterns" | "memory" | "numbers" | "addsub" | "multiply";
+
 export type GameInfo = {
   id: string;
   title: string;
   blurb: string;
   accent: Accent;
-  section: "logic" | "patterns" | "multiply" | "numbers";
-  /** total levels (logic games) or rounds per difficulty (pattern games) for the star counter */
+  section: SectionId;
+  /** levels (level games) or difficulties (round games); each is worth up to 3 stars */
   levels: number;
 };
 
-export const SECTIONS: { id: GameInfo["section"]; title: string; subtitle: string }[] = [
-  { id: "logic", title: "Puzzle Adventures", subtitle: "Use the arrow keys to solve each level" },
-  { id: "patterns", title: "Pattern Detective", subtitle: "Find the rule, pick the right shape" },
-  { id: "multiply", title: "Times & Share", subtitle: "Groups, hops and fair sharing: the start of multiplying and dividing" },
-  { id: "numbers", title: "Number Fun", subtitle: "Play with numbers" },
+export type SectionInfo = { id: SectionId; title: string; subtitle: string; accent: Accent };
+
+/** Home page order: thinking games first, then math from counting up to dividing. */
+export const SECTIONS: SectionInfo[] = [
+  { id: "logic", title: "Puzzle Adventures", subtitle: "Plan your moves and solve each level", accent: "coral" },
+  { id: "patterns", title: "Pattern Detective", subtitle: "Find the rule, pick the right shape", accent: "berry" },
+  { id: "memory", title: "Memory Lane", subtitle: "Look closely, remember, and repeat", accent: "mint" },
+  { id: "numbers", title: "Number Fun", subtitle: "Count, order and find numbers", accent: "ocean" },
+  { id: "addsub", title: "Add & Take Away", subtitle: "Make ten, balance, shop and take away", accent: "sun" },
+  { id: "multiply", title: "Times & Share", subtitle: "Groups, hops and fair sharing", accent: "grape" },
 ];
 
 export const GAMES: GameInfo[] = [
@@ -33,9 +40,22 @@ export const GAMES: GameInfo[] = [
   { id: "cookie-party", title: "Cookie Party", blurb: "Share the cookies fairly. Leftovers go to the dog", accent: "berry", section: "multiply", levels: 12 },
   { id: "packing", title: "Packing Day", blurb: "Push eggs into boxes. Every box must be full", accent: "ocean", section: "multiply", levels: 10 },
   { id: "magic-machine", title: "Magic Machine", blurb: "What does the machine do? Can you undo it?", accent: "grape", section: "multiply", levels: 3 },
+  { id: "make-ten", title: "Make Ten", blurb: "Pop two numbers that add up to the target", accent: "sun", section: "addsub", levels: 3 },
+  { id: "balance", title: "Balance Scale", blurb: "Add blocks until both sides weigh the same", accent: "ocean", section: "addsub", levels: 3 },
+  { id: "coin-shop", title: "Coin Shop", blurb: "Pay the exact price and count the change", accent: "grass", section: "addsub", levels: 3 },
+  { id: "monster-munch", title: "Monster Munch", blurb: "The monster ate some apples. How many are left?", accent: "berry", section: "addsub", levels: 3 },
+  { id: "sum-path", title: "Sum Path", blurb: "Collect numbers and reach the flag with the exact total", accent: "coral", section: "addsub", levels: 12 },
+  { id: "pair-match", title: "Pair Match", blurb: "Flip two cards. Find all the pairs", accent: "grape", section: "memory", levels: 3 },
+  { id: "copy-lights", title: "Copy the Lights", blurb: "Watch the lights, then play them back", accent: "coral", section: "memory", levels: 3 },
+  { id: "whats-missing", title: "What's Missing?", blurb: "Remember the toys. Which one went away?", accent: "sun", section: "memory", levels: 3 },
+  { id: "footprints", title: "Footprints", blurb: "Watch the robot's path, then walk it yourself", accent: "mint", section: "memory", levels: 3 },
   { id: "missing-numbers", title: "Missing Numbers", blurb: "Put the lost numbers back", accent: "ocean", section: "numbers", levels: 3 },
   { id: "find-numbers", title: "Find Numbers", blurb: "Find 1, then 2, then 3...", accent: "mint", section: "numbers", levels: 3 },
 ];
+
+export function maxStars(g: GameInfo): number {
+  return g.levels * 3;
+}
 
 export function gameInfo(id: string): GameInfo {
   const g = GAMES.find((x) => x.id === id);

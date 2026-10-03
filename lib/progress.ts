@@ -10,6 +10,9 @@ type ProgressState = {
   hydrated: boolean;
   muted: boolean;
   games: Record<string, GameProgress>;
+  /** most recently opened games, newest first */
+  recent: string[];
+  visit: (gameId: string) => void;
   recordStars: (gameId: string, level: number, stars: number) => void;
   toggleMute: () => void;
   resetAll: () => void;
@@ -46,6 +49,8 @@ export const useProgress = create<ProgressState>()(
       hydrated: false,
       muted: false,
       games: {},
+      recent: [],
+      visit: (gameId) => set((s) => ({ recent: [gameId, ...s.recent.filter((g) => g !== gameId)].slice(0, 6) })),
       recordStars: (gameId, level, stars) =>
         set((s) => {
           const game = s.games[gameId] ?? {};
@@ -53,13 +58,13 @@ export const useProgress = create<ProgressState>()(
           return { games: { ...s.games, [gameId]: { ...game, [level]: stars } } };
         }),
       toggleMute: () => set((s) => ({ muted: !s.muted })),
-      resetAll: () => set({ games: {} }),
+      resetAll: () => set({ games: {}, recent: [] }),
     }),
     {
       name: "aavir-games-v1",
       version: 1,
       storage: createJSONStorage(() => safeStorage),
-      partialize: (s) => ({ muted: s.muted, games: s.games }),
+      partialize: (s) => ({ muted: s.muted, games: s.games, recent: s.recent }),
       skipHydration: true,
       onRehydrateStorage: () => () => {
         useProgress.setState({ hydrated: true });

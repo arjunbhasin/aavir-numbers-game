@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Missing Numbers · Aavir's Puzzle Pa
 
 export default function Page() {
   return (
-    <GameShell title="Missing Numbers" accent="ocean" hint="Some numbers got lost. Put them back!">
+    <GameShell id="missing-numbers" hint="Some numbers got lost. Put them back!">
       <MissingNumbersGame />
     </GameShell>
   );

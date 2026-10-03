@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Garden Builder · Aavir's Puzzle Par
 
 export default function Page() {
   return (
-    <GameShell title="Garden Builder" accent="grass" hint="Plant all the seedlings in rows. Find every rectangle!">
+    <GameShell id="garden" hint="Plant all the seedlings in rows. Find every rectangle!">
       <GardenGame />
     </GameShell>
   );

@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Bug Count Flash · Aavir's Puzzle Pa
 
 export default function Page() {
   return (
-    <GameShell title="Bug Count Flash" accent="coral" hint="Peek at the ladybugs, then say how many. Count in groups!">
+    <GameShell id="bug-flash" hint="Peek at the ladybugs, then say how many. Count in groups!">
       <BugFlashGame />
     </GameShell>
   );

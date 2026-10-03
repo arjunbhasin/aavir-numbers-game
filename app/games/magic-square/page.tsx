@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Magic Square · Aavir's Puzzle Park"
 
 export default function Page() {
   return (
-    <GameShell title="Magic Square" accent="grape" hint="Every row and column has a rule. What goes in the empty box?">
+    <GameShell id="magic-square" hint="Every row and column has a rule. What goes in the empty box?">
       <MagicSquareGame />
     </GameShell>
   );
