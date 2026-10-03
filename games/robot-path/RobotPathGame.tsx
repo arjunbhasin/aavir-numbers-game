@@ -27,6 +27,7 @@ function RobotPathLevel({ level: index, onWin, onLevels }: LevelProps) {
   const [tries, setTries] = useState(0);
   const [shake, setShake] = useState(0);
   const [message, setMessage] = useState<string | null>(null);
+  const [won, setWon] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const touch = useIsTouch();
   const cell = useCellSize(level.rows, level.cols, touch, 140);
@@ -39,7 +40,7 @@ function RobotPathLevel({ level: index, onWin, onLevels }: LevelProps) {
   };
 
   const add = (d: Dir) => {
-    if (running) return;
+    if (running || won) return;
     if (program.length >= maxSteps) {
       playSound("bump");
       setShake((n) => n + 1);
@@ -65,7 +66,7 @@ function RobotPathLevel({ level: index, onWin, onLevels }: LevelProps) {
   };
 
   const go = () => {
-    if (running || !program.length) return;
+    if (running || won || !program.length) return;
     const result = run(level, program);
     const attempt = tries + 1;
     setTries(attempt);
@@ -93,6 +94,7 @@ function RobotPathLevel({ level: index, onWin, onLevels }: LevelProps) {
         setRunning(false);
         if (result.success) {
           playSound("correct");
+          setWon(true);
           const lengthStars = starsForMoves(program.length, par);
           onWin(Math.max(1, attempt > 2 ? lengthStars - 1 : lengthStars));
         } else {
@@ -106,7 +108,7 @@ function RobotPathLevel({ level: index, onWin, onLevels }: LevelProps) {
   };
 
   useGameKeys({
-    enabled: true,
+    enabled: !won,
     onMove: add,
     onUndo: removeLast,
     onRestart: clear,

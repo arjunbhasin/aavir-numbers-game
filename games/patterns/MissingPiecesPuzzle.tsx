@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { FigureCard } from "@/components/shapes/FigureCard";
 import OptionRow from "@/components/shapes/OptionRow";
 import type { PuzzleProps } from "@/components/shapes/PatternGame";
+import { useLater } from "@/lib/input";
 import { makeRng } from "@/lib/random";
 import { playSound } from "@/lib/sound";
 import { sameFigure } from "./figure";
@@ -14,6 +15,7 @@ export default function MissingPiecesPuzzle({ seed, difficulty, onSolved }: Puzz
   const p = useMemo(() => makeMissingPieces(makeRng(seed), difficulty), [seed, difficulty]);
   const gaps = p.items.map((f, i) => (f ? -1 : i)).filter((i) => i >= 0);
   const [filled, setFilled] = useState(0); // how many gaps are done
+  const later = useLater();
   const [used, setUsed] = useState<number[]>([]);
   const [wrong, setWrong] = useState<number[]>([]);
   const [mistakes, setMistakes] = useState(0);
@@ -28,7 +30,7 @@ export default function MissingPiecesPuzzle({ seed, difficulty, onSolved }: Puzz
       setWrong([]);
       if (nowFilled === 2) {
         playSound("correct");
-        setTimeout(() => onSolved(mistakes), 1100);
+        later(() => onSolved(mistakes), 1100);
       } else {
         playSound("pick");
       }

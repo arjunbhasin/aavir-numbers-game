@@ -48,10 +48,10 @@ export default function PlayArea({
             Undo
           </Button>
         )}
-        <Button accent="white" onClick={onRestart} icon={<RestartIcon className="w-7 h-7" />}>
+        <Button accent="white" onClick={onRestart} disabled={locked} icon={<RestartIcon className="w-7 h-7" />}>
           Restart
         </Button>
-        <Button accent="white" onClick={onLevels} icon={<GridIcon className="w-7 h-7" />}>
+        <Button accent="white" onClick={onLevels} disabled={locked} icon={<GridIcon className="w-7 h-7" />}>
           Levels
         </Button>
         {moves !== undefined && (

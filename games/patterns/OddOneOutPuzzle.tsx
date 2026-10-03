@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import { useMemo, useState } from "react";
 import FigureView from "@/components/shapes/FigureView";
 import type { PuzzleProps } from "@/components/shapes/PatternGame";
-import { useGameKeys } from "@/lib/input";
+import { useGameKeys, useLater } from "@/lib/input";
 import { makeRng } from "@/lib/random";
 import { playSound } from "@/lib/sound";
 import { line, NICE, TRY_AGAIN } from "./feedback";
@@ -22,6 +22,7 @@ const WHY: Record<string, string> = {
 export default function OddOneOutPuzzle({ seed, difficulty, onSolved }: PuzzleProps) {
   const p = useMemo(() => makeOddOneOut(makeRng(seed), difficulty), [seed, difficulty]);
   const [wrong, setWrong] = useState<number[]>([]);
+  const later = useLater();
   const [solved, setSolved] = useState(false);
   const [focus, setFocus] = useState(-1);
 
@@ -30,7 +31,7 @@ export default function OddOneOutPuzzle({ seed, difficulty, onSolved }: PuzzlePr
     if (i === p.odd) {
       setSolved(true);
       playSound("correct");
-      setTimeout(() => onSolved(wrong.length), 1400);
+      later(() => onSolved(wrong.length), 1400);
     } else {
       playSound("wrong");
       setWrong((w) => [...w, i]);

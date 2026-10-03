@@ -5,7 +5,7 @@ import Board from "@/components/grid/Board";
 import PlayArea from "@/components/grid/PlayArea";
 import LevelGame, { type LevelProps } from "@/components/ui/LevelGame";
 import { starsForMoves, type Dir } from "@/lib/grid";
-import { useHistory, useIsTouch } from "@/lib/input";
+import { useHistory, useIsTouch, useLater } from "@/lib/input";
 import { playSound } from "@/lib/sound";
 import { useCellSize } from "@/lib/useCellSize";
 import { LEVELS } from "./levels";
@@ -42,6 +42,7 @@ function SlideTilesLevel({ level: index, onWin, onLevels }: LevelProps) {
   const start = useMemo(() => shuffled(spec.rows, spec.cols, spec.shuffle, spec.seed), [spec]);
   const history = useHistory<TileBoard>(start);
   const [shake, setShake] = useState(0);
+  const later = useLater();
   const [done, setDone] = useState(false);
   const touch = useIsTouch();
   const cell = Math.min(120, useCellSize(spec.rows, spec.cols, touch) * 1.4);
@@ -61,7 +62,7 @@ function SlideTilesLevel({ level: index, onWin, onLevels }: LevelProps) {
     if (isSolved(next)) {
       setDone(true);
       playSound("correct");
-      setTimeout(() => onWin(starsForMoves(history.moves + 1, spec.par)), 500);
+      later(() => onWin(starsForMoves(history.moves + 1, spec.par)), 500);
     }
   };
 

@@ -7,7 +7,7 @@ import PlayArea from "@/components/grid/PlayArea";
 import { Chest, Door, Grass, Hedge, KeySprite, Robot } from "@/components/grid/Sprites";
 import LevelGame, { type LevelProps } from "@/components/ui/LevelGame";
 import { samePos, starsForMoves, type Dir } from "@/lib/grid";
-import { useHistory, useIsTouch } from "@/lib/input";
+import { useHistory, useIsTouch, useLater } from "@/lib/input";
 import { playSound } from "@/lib/sound";
 import { useCellSize } from "@/lib/useCellSize";
 import { LEVELS } from "./levels";
@@ -18,6 +18,7 @@ function KeyMazeLevel({ level: index, onWin, onLevels }: LevelProps) {
   const par = LEVELS[index].par;
   const history = useHistory(startState(level));
   const [shake, setShake] = useState(0);
+  const later = useLater();
   const [done, setDone] = useState(false);
   const touch = useIsTouch();
   const cell = useCellSize(level.rows, level.cols, touch, 70);
@@ -36,7 +37,7 @@ function KeyMazeLevel({ level: index, onWin, onLevels }: LevelProps) {
     if (samePos(res.state.pos, level.treasure)) {
       setDone(true);
       playSound("correct");
-      setTimeout(() => onWin(starsForMoves(history.moves + 1, par)), 450);
+      later(() => onWin(starsForMoves(history.moves + 1, par)), 450);
     }
   };
 

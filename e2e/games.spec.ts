@@ -91,3 +91,24 @@ test("Missing Numbers accepts the right number", async ({ page }) => {
   }
   await expect(choices).toHaveCount(3);
 });
+
+test("win screen: Enter on a focused button runs that button, not Next", async ({ page }) => {
+  await page.goto("/games/box-push");
+  await page.getByRole("button", { name: "Level 1", exact: true }).click({ force: true });
+  await page.keyboard.press("ArrowRight");
+  const dialog = page.getByRole("dialog", { name: "Level complete" });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("button", { name: "Levels" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "Pick a level" })).toBeVisible();
+});
+
+test("Robot Path ignores keys once the level is won", async ({ page }) => {
+  await page.goto("/games/robot-path");
+  await page.getByRole("button", { name: "Level 1", exact: true }).click({ force: true });
+  for (let i = 0; i < 3; i++) await page.keyboard.press("ArrowLeft");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("dialog", { name: "Level complete" })).toBeVisible({ timeout: 5000 });
+  await page.keyboard.press("ArrowLeft");
+  await expect(page.getByText("3 / 7 steps")).toBeVisible();
+});

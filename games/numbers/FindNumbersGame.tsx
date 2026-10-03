@@ -49,7 +49,7 @@ export default function FindNumbersGame() {
         const stars = starsForMistakes(Math.floor(mistakes / 2));
         record("find-numbers", mode, stars);
         setNext(n + 1);
-        setTimeout(() => setWon(stars), 400);
+        setWon(stars);
       } else {
         playSound("pick");
         setNext(n + 1);

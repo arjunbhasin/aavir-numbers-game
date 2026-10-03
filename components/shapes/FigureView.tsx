@@ -64,7 +64,7 @@ const RADIUS: Record<number, number> = { 1: 38, 2: 19, 3: 19, 4: 18, 5: 15, 6: 1
 const SIZE_SCALE: Record<number, number> = { 1: 0.5, 2: 0.74, 3: 1 };
 
 export default function FigureView({ figure, className = "w-full h-full" }: { figure: Figure; className?: string }) {
-  const id = useId().replace(/:/g, "");
+  const id = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const { main, dark } = COLOR_HEX[figure.color];
   const r = RADIUS[figure.count] * SIZE_SCALE[figure.size];
   const d = shapePath(figure.shape, r);

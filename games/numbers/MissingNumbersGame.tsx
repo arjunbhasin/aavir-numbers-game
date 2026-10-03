@@ -54,7 +54,7 @@ export default function MissingNumbersGame() {
         const stars = starsForMistakes(mistakes);
         record("missing-numbers", mode, stars);
         setRow(row + 1);
-        setTimeout(() => setWon(stars), 400);
+        setWon(stars);
       } else {
         playSound("pick");
         setRow(row + 1);

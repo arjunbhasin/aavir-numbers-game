@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect } from "react";
 import { celebrate } from "@/lib/confetti";
 import { playSound } from "@/lib/sound";
-import { useGameKeys } from "@/lib/input";
 import Button from "./Button";
 import { GridIcon, NextIcon, RestartIcon } from "./Icons";
 import Stars from "./Stars";
@@ -32,7 +31,19 @@ export default function WinOverlay({
     celebrate();
   }, [open]);
 
-  useGameKeys({ enabled: open, onEnter: onNext ?? onAgain });
+  useEffect(() => {
+    if (!open) return;
+    const primary = onNext ?? onAgain;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Enter" || !primary) return;
+      // a focused button (Next / Again / Levels) handles Enter itself
+      if (e.target instanceof HTMLButtonElement || e.target instanceof HTMLAnchorElement) return;
+      e.preventDefault();
+      primary();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onNext, onAgain]);
 
   const cheer = CHEERS[stars ?? 0] ?? CHEERS[0];
 

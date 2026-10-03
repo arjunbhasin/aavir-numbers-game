@@ -141,3 +141,12 @@ export function useHistory<S>(initial: S) {
     canUndo: stack.length > 1,
   };
 }
+
+/** setTimeout that is cancelled automatically when the component unmounts. */
+export function useLater() {
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  useEffect(() => () => timers.current.forEach(clearTimeout), []);
+  return (fn: () => void, ms: number) => {
+    timers.current.push(setTimeout(fn, ms));
+  };
+}

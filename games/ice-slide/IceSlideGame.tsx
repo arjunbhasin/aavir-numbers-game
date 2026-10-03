@@ -6,7 +6,7 @@ import PlayArea from "@/components/grid/PlayArea";
 import { Fish, Ice, Penguin, Rock, Snow } from "@/components/grid/Sprites";
 import LevelGame, { type LevelProps } from "@/components/ui/LevelGame";
 import { samePos, starsForMoves, type Dir, type Pos } from "@/lib/grid";
-import { useHistory, useIsTouch } from "@/lib/input";
+import { useHistory, useIsTouch, useLater } from "@/lib/input";
 import { playSound } from "@/lib/sound";
 import { useCellSize } from "@/lib/useCellSize";
 import { LEVELS } from "./levels";
@@ -20,6 +20,7 @@ function IceSlideLevel({ level: index, onWin, onLevels }: LevelProps) {
   const start: State = { pos: level.start, facing: "down", dist: 0 };
   const history = useHistory(start);
   const [shake, setShake] = useState(0);
+  const later = useLater();
   const [done, setDone] = useState(false);
   const touch = useIsTouch();
   const cell = useCellSize(level.rows, level.cols, touch);
@@ -38,8 +39,8 @@ function IceSlideLevel({ level: index, onWin, onLevels }: LevelProps) {
     playSound("push");
     if (samePos(end, level.fish)) {
       setDone(true);
-      setTimeout(() => playSound("correct"), path.length * 70);
-      setTimeout(() => onWin(starsForMoves(history.moves + 1, par)), path.length * 70 + 500);
+      later(() => playSound("correct"), path.length * 70);
+      later(() => onWin(starsForMoves(history.moves + 1, par)), path.length * 70 + 500);
     }
   };
 
