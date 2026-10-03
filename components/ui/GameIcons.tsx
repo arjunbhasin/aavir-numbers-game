@@ -1,4 +1,5 @@
 import { Crate, KeySprite, Penguin, Robot } from "@/components/grid/Sprites";
+import { Carton, Cookie, Flower, HopBunny, Ladybug, MachineBox } from "@/components/math/Art";
 
 const W = "#ffffff";
 const INK = "#26324a";
@@ -93,6 +94,12 @@ export const GAME_ICONS: Record<string, React.ReactNode> = {
   "whats-next": <NextShapeIcon />,
   "odd-one-out": <OddIcon />,
   "magic-square": <MagicIcon />,
+  "bug-flash": <Ladybug />,
+  "bunny-hops": <HopBunny />,
+  garden: <Flower color={0} />,
+  "cookie-party": <Cookie />,
+  packing: <Carton capacity={4} filled={3} />,
+  "magic-machine": <MachineBox label="× 2" className="w-full h-full" />,
   "missing-numbers": <NumbersIcon />,
   "find-numbers": <FindIcon />,
 };

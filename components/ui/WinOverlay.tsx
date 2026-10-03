@@ -14,6 +14,7 @@ export default function WinOverlay({
   open,
   stars,
   message,
+  detail,
   onNext,
   onAgain,
   onLevels,
@@ -21,6 +22,8 @@ export default function WinOverlay({
   open: boolean;
   stars?: number;
   message?: string;
+  /** a math sentence or explanation shown under the stars */
+  detail?: string;
   onNext?: () => void;
   onAgain?: () => void;
   onLevels?: () => void;
@@ -68,6 +71,16 @@ export default function WinOverlay({
           >
             <h2 className="text-4xl font-bold text-ink">{message ?? cheer}</h2>
             {stars !== undefined && <Stars count={stars} size="w-16 h-16" animate />}
+            {detail && (
+              <motion.p
+                className="text-2xl font-semibold text-ocean-dark bg-ocean/10 rounded-2xl px-5 py-3"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
+              >
+                {detail}
+              </motion.p>
+            )}
             <div className="flex flex-wrap justify-center gap-3 mt-2">
               {onNext && (
                 <Button accent="grass" size="lg" onClick={onNext} icon={<NextIcon className="w-7 h-7" />} autoFocus>

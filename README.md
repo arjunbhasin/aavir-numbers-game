@@ -15,10 +15,16 @@ Friendly logic games and pattern puzzles for 6–7 year olds. Big buttons, cheer
 | | What's Next? | Which shape comes next in the row? |
 | | Odd One Out | Find the shape that breaks the rule. |
 | | Magic Square | Rows follow one rule and columns another. Fill the empty box. |
+| Times & Share | Bug Count Flash | Peek at ladybugs in groups or rows, then say how many. Builds "seeing" groups. |
+| | Bunny Hops | Hop along a number line in equal jumps, dodge puddles, predict how many hops. Skip counting and division. 12 levels. |
+| | Garden Builder | Plant all the seedlings as a rectangle and find every shape. Arrays, turning (3×4 = 4×3), and "lonely" prime numbers. 12 levels. |
+| | Cookie Party | Deal cookies fairly to friends, leftovers go to the dog. Division as sharing, remainders, and working backwards. 12 levels. |
+| | Packing Day | Sokoban with eggs: every box you use must be full. Division as grouping, with mixed box sizes. 10 levels. |
+| | Magic Machine | Find a machine's rule, run it backwards, chain two machines. Division undoes multiplication. |
 | Number Fun | Missing Numbers | Put lost numbers back into a 1–20, 1–50 or 1–100 grid. |
 | | Find Numbers | Find 1, 2, 3… hidden among scattered numbers. |
 
-Pattern games come in Easy, Medium and Hard. Each round is five fresh puzzles made by a generator, so they never run out.
+Pattern games, Bug Count Flash and Magic Machine come in Easy, Medium and Hard. Each round is five fresh puzzles made by a generator, so they never run out.
 
 ## Controls
 
@@ -47,6 +53,7 @@ bun run build
 - `app/` holds the home page and one route per game under `app/games/<slug>`.
 - `games/<game>/` holds each game's rules (`logic.ts`), its levels, and its screen.
 - `games/patterns/` holds the shape model and the puzzle generators.
+- `components/math/` holds the art and answer buttons for the Times & Share games.
 - `components/` holds shared pieces: the board, sprites, buttons, the win screen, the shape renderer.
 - `lib/` holds progress saving, sounds, keyboard and swipe input, and the breadth-first solver.
 

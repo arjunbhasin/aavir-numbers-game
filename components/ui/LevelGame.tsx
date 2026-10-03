@@ -8,7 +8,8 @@ import WinOverlay from "./WinOverlay";
 
 export type LevelProps = {
   level: number;
-  onWin: (stars: number) => void;
+  /** `detail` is an optional math sentence for the win screen */
+  onWin: (stars: number, detail?: string) => void;
   onLevels: () => void;
 };
 
@@ -27,6 +28,7 @@ export default function LevelGame({
   const [level, setLevel] = useState<number | null>(null);
   const [attempt, setAttempt] = useState(0);
   const [won, setWon] = useState<number | null>(null);
+  const [detail, setDetail] = useState<string | undefined>(undefined);
   const record = useProgress((s) => s.recordStars);
 
   const open = (l: number | null) => {
@@ -45,8 +47,9 @@ export default function LevelGame({
       <div key={`${level}-${attempt}`} className="w-full flex flex-col items-center">
         {renderLevel({
           level,
-          onWin: (stars) => {
+          onWin: (stars, note) => {
             record(gameId, level, stars);
+            setDetail(note);
             setWon(stars);
           },
           onLevels: () => open(null),
@@ -55,6 +58,7 @@ export default function LevelGame({
       <WinOverlay
         open={won !== null}
         stars={won ?? 0}
+        detail={detail}
         onNext={level < count - 1 ? () => open(level + 1) : undefined}
         onAgain={() => open(level)}
         onLevels={() => open(null)}

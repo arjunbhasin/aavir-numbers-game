@@ -10,6 +10,12 @@ const GAMES = [
   ["whats-next", "What's Next?"],
   ["odd-one-out", "Odd One Out"],
   ["magic-square", "Magic Square"],
+  ["bug-flash", "Bug Count Flash"],
+  ["bunny-hops", "Bunny Hops"],
+  ["garden", "Garden Builder"],
+  ["cookie-party", "Cookie Party"],
+  ["packing", "Packing Day"],
+  ["magic-machine", "Magic Machine"],
   ["missing-numbers", "Missing Numbers"],
   ["find-numbers", "Find Numbers"],
 ] as const;

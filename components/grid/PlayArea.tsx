@@ -15,6 +15,7 @@ export default function PlayArea({
   onUndo,
   onRestart,
   onLevels,
+  onEnter,
   canUndo,
   moves,
   par,
@@ -26,6 +27,7 @@ export default function PlayArea({
   onUndo?: () => void;
   onRestart: () => void;
   onLevels: () => void;
+  onEnter?: () => void;
   canUndo?: boolean;
   moves?: number;
   par?: number;
@@ -33,7 +35,7 @@ export default function PlayArea({
   extra?: ReactNode;
 }) {
   const touch = useIsTouch();
-  useGameKeys({ enabled: !locked, onMove, onUndo, onRestart });
+  useGameKeys({ enabled: !locked, onMove, onUndo, onRestart, onEnter });
 
   return (
     <div className="flex flex-col items-center w-full">

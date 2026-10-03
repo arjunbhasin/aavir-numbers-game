@@ -32,8 +32,11 @@ export function starsForMistakes(m: number): number {
 export default function PatternGame({
   gameId,
   renderPuzzle,
+  blurbs,
 }: {
   gameId: string;
+  /** what each difficulty means for this game, shown on the picker */
+  blurbs?: [string, string, string];
   renderPuzzle: (p: PuzzleProps & { key: string }) => ReactNode;
 }) {
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
@@ -56,7 +59,7 @@ export default function PatternGame({
       <ModePicker
         gameId={gameId}
         heading="How tricky?"
-        modes={DIFF_STYLE.map((m, i) => ({ ...m, title: DIFFICULTY_NAMES[i] }))}
+        modes={DIFF_STYLE.map((m, i) => ({ ...m, title: DIFFICULTY_NAMES[i], blurb: blurbs?.[i] ?? m.blurb }))}
         onPick={(i) => start(i as Difficulty)}
       />
     );
