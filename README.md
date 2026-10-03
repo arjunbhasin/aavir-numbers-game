@@ -1,40 +1,59 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Aavir's Puzzle Park
 
-## Getting Started
+Friendly logic games and pattern puzzles for 6–7 year olds. Big buttons, cheerful sounds, no timers, no game-over. Works with a keyboard on a laptop and with taps and swipes on a tablet. Stars and unlocked levels are saved in the browser. There are no accounts.
 
-First, run the development server:
+## Games
+
+| Section | Game | How it plays |
+|---|---|---|
+| Puzzle Adventures | Box Push | Sokoban. Push every box onto a star. 15 levels. |
+| | Ice Slide | The penguin slides until it hits a rock. Stop on the fish. 15 levels. |
+| | Key Maze | Each key opens one door of its color. Reach the treasure. 12 levels. |
+| | Slide Tiles | Sliding number puzzle, 2x2 up to 3x3. 9 levels. |
+| | Robot Path | Plan a list of arrow steps, press Go, collect the stars, reach the battery. 12 levels. |
+| Pattern Detective | Missing Pieces | A row of shapes with two gaps. Pick both missing shapes in order. |
+| | What's Next? | Which shape comes next in the row? |
+| | Odd One Out | Find the shape that breaks the rule. |
+| | Magic Square | Rows follow one rule and columns another. Fill the empty box. |
+| Number Fun | Missing Numbers | Put lost numbers back into a 1–20, 1–50 or 1–100 grid. |
+| | Find Numbers | Find 1, 2, 3… hidden among scattered numbers. |
+
+Pattern games come in Easy, Medium and Hard. Each round is five fresh puzzles made by a generator, so they never run out.
+
+## Controls
+
+- Arrow keys or WASD move. `U` (or Backspace) undoes, `R` restarts, Enter continues.
+- Answer choices: click, press `A`–`E` or `1`–`5`, or use the arrows and Enter.
+- On a touch screen an arrow pad appears, and you can swipe on the board.
+
+## Tech
+
+Next.js 16 (App Router, all pages static), React 19, Tailwind CSS 4, Motion, Zustand, Vitest, Playwright, Bun.
+
+TypeScript 7 does the type-checking (`bun run typecheck`). TypeScript 6 is also installed because typescript-eslint and Next's build step do not support the TypeScript 7 API yet.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
+bun run dev        # http://localhost:3000
+bun run test       # unit tests: every level is solvable, puzzles have one right answer
+bun run test:e2e   # browser tests (run `bun run build` first; `bunx playwright install chromium` once)
+bun run lint
+bun run typecheck
+bun run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project layout
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+- `app/` holds the home page and one route per game under `app/games/<slug>`.
+- `games/<game>/` holds each game's rules (`logic.ts`), its levels, and its screen.
+- `games/patterns/` holds the shape model and the puzzle generators.
+- `components/` holds shared pieces: the board, sprites, buttons, the win screen, the shape renderer.
+- `lib/` holds progress saving, sounds, keyboard and swipe input, and the breadth-first solver.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## Adding or editing levels
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+Levels are small text drawings, for example Box Push uses `#` wall, `@` player, `$` box, `.` star. Each level stores a `par`, the fewest possible moves, which sets the stars. After editing a level run `bun run test`. The test solves every level and tells you if it is impossible or if `par` changed.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Deploying
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Import the repo in Vercel. No settings or environment variables are needed.

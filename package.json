@@ -1,28 +1,36 @@
 {
-  "name": "aavir-numbers-game",
-  "version": "0.1.0",
+  "name": "aavir-games",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "typecheck": "node node_modules/@typescript/native/bin/tsc --noEmit"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
-    "@mui/material": "^5.14.15",
-    "@types/canvas-confetti": "^1.6.4",
-    "canvas-confetti": "^1.9.2",
-    "next": "14.0.0",
-    "react": "^18",
-    "react-dom": "^18",
-    "react-hook-form": "^7.47.0"
+    "canvas-confetti": "^1.9.4",
+    "motion": "^14.0.0",
+    "next": "^16.3.8",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18"
+    "@playwright/test": "^1.63.0",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/node": "^26.6.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "eslint": "^10.12.0",
+    "eslint-config-next": "^16.3.8",
+    "tailwindcss": "^4.3.3",
+    "typescript": "6.0.3",
+    "vitest": "^5.0.3"
   }
 }

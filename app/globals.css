@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-fredoka), ui-rounded, "Arial Rounded MT Bold", system-ui, sans-serif;
+
+  --color-sky-top: #bfe6ff;
+  --color-sky-bottom: #eaf7ff;
+  --color-ink: #26324a;
+  --color-ink-soft: #5a6785;
+  --color-paper: #ffffff;
+  --color-cream: #fff8ec;
+
+  --color-coral: #ff7a6b;
+  --color-coral-dark: #e35a4a;
+  --color-sun: #ffc93c;
+  --color-sun-dark: #e8a800;
+  --color-grass: #5cc96b;
+  --color-grass-dark: #3aa64b;
+  --color-ocean: #4aa3ff;
+  --color-ocean-dark: #2b7fdc;
+  --color-grape: #a678f0;
+  --color-grape-dark: #8253d1;
+  --color-berry: #ff6fae;
+  --color-berry-dark: #e04b8e;
+  --color-mint: #3fd1c0;
+  --color-mint-dark: #1fae9e;
+
+  --animate-wobble: wobble 0.45s ease-in-out;
+  --animate-float: float 4s ease-in-out infinite;
+  --animate-pop: pop 0.35s ease-out;
+
+  @keyframes wobble {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px) rotate(-3deg); }
+    40% { transform: translateX(8px) rotate(3deg); }
+    60% { transform: translateX(-5px) rotate(-2deg); }
+    80% { transform: translateX(5px) rotate(1deg); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  @keyframes pop {
+    0% { transform: scale(0.6); opacity: 0; }
+    70% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+}
+
+html, body {
+  min-height: 100%;
+}
+
+html {
+  background: var(--color-sky-bottom);
+}
+
+body {
+  color: var(--color-ink);
+  background:
+    radial-gradient(ellipse 30% 12% at 15% 12%, rgba(255,255,255,.9), transparent 70%),
+    radial-gradient(ellipse 25% 10% at 80% 20%, rgba(255,255,255,.8), transparent 70%),
+    radial-gradient(ellipse 35% 10% at 60% 85%, rgba(255,255,255,.6), transparent 70%),
+    linear-gradient(180deg, var(--color-sky-top), var(--color-sky-bottom));
+  background-attachment: fixed;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+button {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+button:focus-visible, a:focus-visible {
+  outline: 4px solid var(--color-ocean);
+  outline-offset: 3px;
+}
+
+/* chunky "3D" button press */
+.btn-3d {
+  box-shadow: 0 6px 0 var(--btn-shadow, rgba(0,0,0,.18));
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.btn-3d:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 var(--btn-shadow, rgba(0,0,0,.18));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
