@@ -66,6 +66,10 @@ The home page groups games into six sections with sticky tabs, shows each game's
 - Double-tap zoom and long-press text selection are turned off so taps feel like an app.
 - On an iPad, Share → "Add to Home Screen" installs it with its own icon and opens it full screen.
 
+## Browser support
+
+Recent Chrome, Edge, Firefox and Safari. On iPad and iPhone it needs iPadOS/iOS 16.4 or newer (the styling uses modern CSS that older Safari versions don't support).
+
 ## Tech
 
 Next.js 16 (App Router, all pages static), React 19, Tailwind CSS 4, Motion, Zustand, Vitest, Playwright, Bun.

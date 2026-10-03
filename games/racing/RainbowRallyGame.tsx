@@ -103,7 +103,10 @@ function RaceView({ level, onWin, onLevels }: LevelProps) {
       raf = requestAnimationFrame(frame);
       const dt = (now - last) / 1000;
       last = now;
-      if (document.hidden) return;
+      if (document.hidden) {
+        engine.setSpeed(0); // no humming from a background tab
+        return;
+      }
       update(race, input.current, dt);
       for (const e of race.events) {
         if (e === "star") playSound("pick");
@@ -121,7 +124,8 @@ function RaceView({ level, onWin, onLevels }: LevelProps) {
           );
         }
       }
-      engine.setSpeed(race.speed / MAX_SPEED);
+      // the hum fades out once you've crossed the line
+      engine.setSpeed(race.finished ? 0 : race.speed / MAX_SPEED);
       drawRace(ctx, race, sprites, size.w, size.h, now / 1000);
       if (now - lastHud > 100) {
         lastHud = now;
@@ -206,7 +210,7 @@ function RaceView({ level, onWin, onLevels }: LevelProps) {
       </div>
 
       <div ref={wrap} className="relative w-full max-w-[1000px] rounded-3xl overflow-hidden shadow-[0_10px_0_rgba(0,0,0,.12)] touch-none select-none">
-        <canvas ref={canvas} className="block mx-auto" />
+        <canvas ref={canvas} className="block mx-auto" role="img" aria-label="Race track" />
         {steerZone("left")}
         {steerZone("right")}
         {hud && (
