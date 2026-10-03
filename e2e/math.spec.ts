@@ -75,3 +75,39 @@ for (const [slug, accent] of [
     await expect(page.getByLabel("Puzzle 2 of 5")).toBeVisible({ timeout: 8000 });
   });
 }
+
+test("progress is saved in the browser for the new games", async ({ page }) => {
+  await openLevel(page, "cookie-party");
+  for (const k of ["1", "2", "1", "2", "1", "2"]) {
+    await page.keyboard.press(k);
+    await page.waitForTimeout(120);
+  }
+  await expect(winDialog(page)).toBeVisible({ timeout: 4000 });
+  await page.reload();
+  await expect(page.getByRole("button", { name: "Level 1", exact: true }).getByLabel("3 of 3 stars")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Level 2", exact: true })).toBeEnabled();
+  const saved = await page.evaluate(() => localStorage.getItem("aavir-games-v1"));
+  expect(JSON.parse(saved!).state.games["cookie-party"]).toEqual({ 0: 3 });
+});
+
+test("Bunny Hops: no extra hops while splashing in a puddle", async ({ page }) => {
+  await page.goto("/games/bunny-hops");
+  await page.evaluate(() =>
+    localStorage.setItem(
+      "aavir-games-v1",
+      JSON.stringify({ state: { muted: true, games: { "bunny-hops": Object.fromEntries(Array.from({ length: 11 }, (_, i) => [i, 3])) } }, version: 1 }),
+    ),
+  );
+  await openLevel(page, "bunny-hops", 12);
+  await page.getByRole("button", { name: "hops of 2" }).click();
+  await page.keyboard.press("ArrowRight");
+  await page.waitForTimeout(150);
+  await page.keyboard.press("ArrowRight"); // lands in the puddle at 4
+  await page.keyboard.press("ArrowRight"); // must be ignored
+  await page.keyboard.press("ArrowRight");
+  await page.waitForTimeout(1400);
+  await expect(page.getByText("2 + 2 = 4")).toHaveCount(0);
+  await expect(page.getByText(/Splash!/)).toBeVisible();
+  await page.keyboard.press("c");
+  await expect(page.getByRole("button", { name: "hops of 3" })).toBeVisible();
+});

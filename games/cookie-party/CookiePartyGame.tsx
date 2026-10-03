@@ -47,7 +47,7 @@ function Friend({
       type="button"
       onClick={onClick}
       disabled={!onClick}
-      aria-label={`Give a cookie to ${NAMES[kind]}`}
+      aria-label={onClick ? `Give a cookie to ${NAMES[kind]}` : `${NAMES[kind]} has ${cookies.length} cookies`}
       animate={bounce ? { y: [0, -14, 0, -8, 0] } : { y: 0 }}
       transition={{ duration: 0.5 }}
       className={`flex flex-col items-center rounded-3xl p-2 w-[clamp(6rem,15vw,9rem)] ${selected ? "bg-white/80 ring-4 ring-berry" : "bg-white/40"} ${onClick ? "cursor-pointer" : "cursor-default"}`}
@@ -150,7 +150,8 @@ function ShareView({ level, onWin, onLevels }: { level: ShareLevel } & Omit<Leve
       if (e.metaKey || e.ctrlKey) return;
       const n = Number(e.key);
       if (n >= 1 && n <= level.plates) give(n - 1);
-      if (e.key === " " && level.dealButton) {
+      // a focused button already reacts to Space by itself
+      if (e.key === " " && level.dealButton && !(e.target instanceof HTMLButtonElement)) {
         e.preventDefault();
         dealRound();
       }

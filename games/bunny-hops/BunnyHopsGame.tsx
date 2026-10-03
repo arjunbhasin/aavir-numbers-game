@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Carrot, HopBunny, Splash } from "@/components/math/Art";
 import Choices from "@/components/math/Choices";
 import Button from "@/components/ui/Button";
@@ -132,9 +132,11 @@ function HopLevelView({ level, onWin, onLevels }: { level: HopLevel } & Omit<Lev
   const [mistakes, setMistakes] = useState(0);
   const [message, setMessage] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  /** true from the moment the bunny lands in a puddle until it is back on dry ground */
+  const [splashing, setSplashing] = useState(false);
   const touch = useIsTouch();
   const later = useLater();
-  const busy = splash !== null || done;
+  const busy = splashing || done;
 
   const reset = (newSize: number | null) => {
     setSize(newSize);
@@ -157,10 +159,12 @@ function HopLevelView({ level, onWin, onLevels }: { level: HopLevel } & Omit<Lev
     setMessage(null);
     if (res.result === "puddle") {
       playSound("wrong");
+      setSplashing(true);
       setMistakes((m) => m + 1);
       later(() => setSplash(res.to), 350);
       later(() => {
         setSplash(null);
+        setSplashing(false);
         setPos(pos);
         setHopId((h) => h + 1);
         setMessage(level.size === null ? "Splash! Hops of " + size + " land in the puddle. Try another hop size." : "Splash!");
@@ -184,6 +188,15 @@ function HopLevelView({ level, onWin, onLevels }: { level: HopLevel } & Omit<Lev
       }
     }
   };
+
+  useEffect(() => {
+    if (level.size !== null || size === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === "c" && !e.metaKey && !e.ctrlKey && !busy) reset(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
 
   useGameKeys({
     enabled: !busy && size !== null,
@@ -234,7 +247,9 @@ function HopLevelView({ level, onWin, onLevels }: { level: HopLevel } & Omit<Lev
           {touch ? (
             <DPad onMove={(d) => (d === "right" ? doHop(1) : d === "left" ? doHop(-1) : undefined)} />
           ) : (
-            <p className="text-lg text-ink-soft">Press → to hop forward, ← to hop back</p>
+            <p className="text-lg text-ink-soft">
+              Press → to hop forward, ← to hop back{level.size === null ? " · C changes the hop size" : ""}
+            </p>
           )}
           <div className="flex flex-col gap-2">
             {level.size === null && (

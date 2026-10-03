@@ -122,7 +122,7 @@ function GardenLevel({ level, onWin, onLevels }: LevelProps) {
 
   return (
     <PlayArea
-      locked={done}
+      locked={done || blooming}
       onMove={resize}
       onEnter={doPlant}
       onRestart={() => {
