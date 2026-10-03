@@ -11,6 +11,8 @@ export type Level = {
   items: Item[];
   start: Pos;
   treasure: Pos;
+  /** one-way tiles: you may only step onto them moving in this direction */
+  arrows: (Dir | null)[][];
 };
 
 export type State = {
@@ -24,9 +26,12 @@ export type State = {
 
 const COLORS = Object.keys(KEY_COLORS) as KeyColor[];
 
+const ARROWS: Record<string, Dir> = { "^": "up", v: "down", "<": "left", ">": "right" };
+
 /**
  * Map format:  #  hedge   (space) path   @  start   T  treasure
  *              r b y  keys (red, blue, yellow)   R B Y  matching doors
+ *              ^ v < >  one-way path: you can only walk onto it going that way
  */
 export function parseLevel(text: string): Level {
   const grid = parseRows(text);
@@ -43,16 +48,19 @@ export function parseLevel(text: string): Level {
       return "path";
     }),
   );
-  return { rows: grid.length, cols: grid[0].length, tiles, items, start, treasure };
+  const arrows = grid.map((row) => row.map((ch) => ARROWS[ch] ?? null));
+  return { rows: grid.length, cols: grid[0].length, tiles, items, start, treasure, arrows };
 }
 
-export type MoveResult = { state: State; event: "step" | "key" | "door" } | { state: null; event: "wall" | "locked" };
+export type MoveResult = { state: State; event: "step" | "key" | "door" } | { state: null; event: "wall" | "locked" | "oneway" };
 
 export function move(level: Level, s: State, d: Dir): MoveResult {
   const next = step(s.pos, d);
   if (next.r < 0 || next.c < 0 || next.r >= level.rows || next.c >= level.cols || level.tiles[next.r][next.c] === "wall") {
     return { state: null, event: "wall" };
   }
+  const arrow = level.arrows[next.r][next.c];
+  if (arrow && arrow !== d) return { state: null, event: "oneway" };
   const item = level.items.find((it) => samePos(it.pos, next) && !s.used.includes(it.id));
   if (!item) return { state: { ...s, pos: next, facing: d }, event: "step" };
   if (item.kind === "key") {
@@ -68,10 +76,11 @@ export function startState(level: Level): State {
   return { pos: level.start, facing: "down", used: [], bag: [] };
 }
 
-export function solve(level: Level): Dir[] | null {
+/** Fewest moves to the treasure from `from` (the start by default), or null if it can't be reached. */
+export function solve(level: Level, from: State = startState(level)): Dir[] | null {
   const key = (s: State) => posKey(s.pos) + "|" + [...s.used].sort((a, b) => a - b).join(",");
   return bfs<State, Dir>(
-    startState(level),
+    from,
     key,
     (s) =>
       DIRS.flatMap((d) => {

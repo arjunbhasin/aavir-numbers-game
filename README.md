@@ -9,7 +9,7 @@ Friendly logic games and pattern puzzles for 6–7 year olds. Big buttons, cheer
 | Race Day | Rainbow Rally | A pseudo-3D racer: steer while the car drives itself, grab stars and rainbow boost pads, and race three animal friends over 3 laps. Meadow, Beach and Snow tracks. |
 | Puzzle Adventures | Box Push | Sokoban. Push every box onto a star. 15 levels. |
 | | Ice Slide | The penguin slides until it hits a rock. Stop on the fish. 15 levels. |
-| | Key Maze | Each key opens one door of its color. Reach the treasure. 12 levels. |
+| | Key Maze | Each key opens one door of its color. Reach the treasure. 24 levels; later ones add one-way arrow paths and decoy doors that can waste a key. |
 | | Slide Tiles | Sliding number puzzle, 2x2 up to 3x3. 9 levels. |
 | | Robot Path | Plan a list of arrow steps, press Go, collect the stars, reach the battery. 12 levels. |
 | Pattern Detective | Missing Pieces | A row of shapes with two gaps. Pick both missing shapes in order. |

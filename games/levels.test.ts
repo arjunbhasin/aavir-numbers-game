@@ -55,6 +55,50 @@ describe("Key Maze", () => {
     const withoutKeys = { ...level, items: level.items.filter((it) => it.kind === "door") };
     expect(keys.solve(withoutKeys)).toBeNull();
   });
+  it.each(KEYS.map((l, i) => [i + 1, l] as const).filter(([, l]) => /[\^v<>]/.test(l.map)))("level %i: the one-way arrows change the best route", (_, l) => {
+    const level = keys.parseLevel(l.map);
+    const flat = keys.solve({ ...level, arrows: level.arrows.map((row) => row.map(() => null)) });
+    expect(flat).not.toBeNull();
+    expect(flat!.length).toBeLessThan(l.par);
+  });
+
+  it.each(
+    KEYS.map((l, i) => [i + 1, l] as const).filter(([, l]) => {
+      // more doors than keys of some colour = a decoy door
+      const lv = keys.parseLevel(l.map);
+      const count = (c: string, kind: string) => lv.items.filter((it) => it.color === c && it.kind === kind).length;
+      return ["r", "b", "y"].some((c) => count(c, "key") > 0 && count(c, "door") > count(c, "key"));
+    }),
+  )("level %i: a decoy door can really waste a key", (_, l) => {
+    const level = keys.parseLevel(l.map);
+    // explore every reachable state; at least one must be a dead end
+    const seen = new Map<string, keys.State>();
+    const key = (s: keys.State) => `${s.pos.r},${s.pos.c}|${[...s.used].sort().join(",")}`;
+    const queue = [keys.startState(level)];
+    seen.set(key(queue[0]), queue[0]);
+    let deadEnd = false;
+    while (queue.length && !deadEnd) {
+      const s = queue.shift()!;
+      for (const d of ["up", "down", "left", "right"] as const) {
+        const r = keys.move(level, s, d);
+        if (!r.state || seen.has(key(r.state))) continue;
+        seen.set(key(r.state), r.state);
+        if (r.event === "door" && keys.solve(level, r.state) === null) deadEnd = true;
+        queue.push(r.state);
+      }
+    }
+    expect(deadEnd).toBe(true);
+  });
+
+  it("one-way tiles can only be walked onto in their direction", () => {
+    const level = keys.parseLevel("@>T");
+    expect(keys.move(level, keys.startState(level), "right").state).not.toBeNull();
+    const back = keys.parseLevel("T<@");
+    expect(keys.move(back, keys.startState(back), "left").state).not.toBeNull();
+    const wrong = keys.parseLevel("@<T");
+    expect(keys.move(wrong, keys.startState(wrong), "right")).toEqual({ state: null, event: "oneway" });
+  });
+
   it("a key opens one door of its color and is used up", () => {
     const level = keys.parseLevel("@rRRT");
     let s = keys.startState(level);

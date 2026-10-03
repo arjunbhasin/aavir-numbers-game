@@ -31,7 +31,7 @@ export const GAMES: GameInfo[] = [
   { id: "rainbow-rally", title: "Rainbow Rally", blurb: "Race your animal friends on three tracks", accent: "berry", section: "race", levels: 3 },
   { id: "box-push", title: "Box Push", blurb: "Push the boxes onto the stars", accent: "coral", section: "logic", levels: 15 },
   { id: "ice-slide", title: "Ice Slide", blurb: "Slide the penguin to the fish", accent: "ocean", section: "logic", levels: 15 },
-  { id: "key-maze", title: "Key Maze", blurb: "Find keys, open doors, get the treasure", accent: "grass", section: "logic", levels: 12 },
+  { id: "key-maze", title: "Key Maze", blurb: "Find keys, open doors, get the treasure", accent: "grass", section: "logic", levels: 24 },
   { id: "slide-tiles", title: "Slide Tiles", blurb: "Slide the tiles back in order", accent: "grape", section: "logic", levels: 9 },
   { id: "robot-path", title: "Robot Path", blurb: "Plan the steps, then press Go", accent: "mint", section: "logic", levels: 12 },
   { id: "missing-pieces", title: "Missing Pieces", blurb: "Two shapes are missing. Which ones?", accent: "berry", section: "patterns", levels: 3 },
