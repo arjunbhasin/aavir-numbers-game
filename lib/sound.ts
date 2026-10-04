@@ -86,6 +86,7 @@ export function createEngineSound() {
   gain.gain.value = 0;
   osc.connect(filter).connect(gain).connect(ac.destination);
   osc.start();
+  let stopped = false;
   return {
     setSpeed(pct: number) {
       const muted = useProgress.getState().muted;
@@ -94,6 +95,8 @@ export function createEngineSound() {
       gain.gain.setTargetAtTime(muted || pct <= 0.01 ? 0 : 0.035, t, 0.15);
     },
     stop() {
+      if (stopped) return;
+      stopped = true;
       gain.gain.setTargetAtTime(0, ac.currentTime, 0.05);
       osc.stop(ac.currentTime + 0.3);
     },

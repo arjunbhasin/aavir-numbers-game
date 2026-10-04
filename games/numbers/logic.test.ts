@@ -22,6 +22,17 @@ describe("Missing Numbers", () => {
 });
 
 describe("Find Numbers", () => {
+  it("keeps actual 48px targets apart on a hard tablet board", () => {
+    const nums = scatterNumbers(makeRng(1), 100, 1.5, 0.8, { width: 702, height: 560, targetSize: 48 });
+    for (let i = 0; i < nums.length; i++) {
+      const a = nums[i];
+      expect(a.x / 100 * 702).toBeGreaterThanOrEqual(24);
+      expect(a.y / 100 * 560).toBeGreaterThanOrEqual(24);
+      for (const b of nums.slice(i + 1)) {
+        expect(Math.abs(a.x - b.x) / 100 * 702 >= 48 || Math.abs(a.y - b.y) / 100 * 560 >= 48).toBe(true);
+      }
+    }
+  });
   it("places every number once, inside the box, without sharing a cell", () => {
     for (const count of [20, 50, 100]) {
       const nums = scatterNumbers(makeRng(count), count, 1.5, 0.8);

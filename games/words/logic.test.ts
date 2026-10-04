@@ -103,3 +103,18 @@ it("crossword checker rejects accidental extra words", () => {
   expect(validCrossword([{ word: "cat", r: 0, c: 0, dir: "across" }, { word: "hat", r: 1, c: 0, dir: "across" }])).toBe(false);
   expect(WORDS.length).toBeGreaterThan(40);
 });
+
+// A repeating random source must not trap the UI in a retry loop.
+describe.each(DIFFS)("bounded generation at difficulty %i", (d) => {
+  it.each([
+    ["Missing Letter", makeMissingLetter], ["Spell It", makeSpell], ["Word Ladder", makeLadder],
+    ["Word Search", makeSearch], ["Crossword", makeCrossword],
+  ] as const)("%s returns even when randomness repeats", (_name, generate) => {
+    let calls = 0;
+    const rng = () => {
+      if (++calls > 1_000_000) throw new Error("generator exhausted its random-call budget");
+      return 0.999;
+    };
+    expect(generate(rng, d)).toBeDefined();
+  });
+});

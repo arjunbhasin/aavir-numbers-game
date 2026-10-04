@@ -317,8 +317,18 @@ export type Input = { left: boolean; right: boolean };
 /** Move the race forward by dt seconds. */
 export function update(race: Race, input: Input, dt: number): void {
   race.events = [];
-  dt = Math.min(dt, 1 / 20); // never jump too far after a slow frame
+  if (!Number.isFinite(dt) || dt <= 0) return;
+  // At boost speed a 30 fps frame crosses multiple road segments. Small physics
+  // steps never cross an entire segment, so stars, pads and cars cannot be skipped.
+  let remaining = Math.min(dt, 1 / 20);
+  while (remaining > 1e-9) {
+    const step = Math.min(remaining, 1 / 120);
+    updateStep(race, input, step);
+    remaining -= step;
+  }
+}
 
+function updateStep(race: Race, input: Input, dt: number): void {
   if (race.countdown > 0) {
     const before = Math.ceil(race.countdown);
     race.countdown -= dt;

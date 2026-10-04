@@ -1,26 +1,28 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useProgress } from "@/lib/progress";
+import { useCancellableLater } from "@/lib/input";
 
 /** Small grown-up control: hold for two seconds to clear all saved stars. */
 export default function ResetProgress() {
   const reset = useProgress((s) => s.resetAll);
   const [holding, setHolding] = useState(false);
   const [done, setDone] = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { schedule: later, cancel: cancelLater } = useCancellableLater();
   const start = () => {
+    cancelLater();
     setHolding(true);
-    timer.current = setTimeout(() => {
+    later(() => {
       reset();
       setHolding(false);
       setDone(true);
-      setTimeout(() => setDone(false), 2000);
+      later(() => setDone(false), 2000);
     }, 2000);
   };
   const stop = () => {
     setHolding(false);
-    if (timer.current) clearTimeout(timer.current);
+    if (holding) cancelLater();
   };
   return (
     <button

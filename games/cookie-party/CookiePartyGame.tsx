@@ -2,7 +2,7 @@
 
 import KeyboardHint from "@/components/ui/KeyboardHint";
 import { LayoutGroup, motion } from "motion/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ANIMALS, Animal, Cookie, Dog, Plate } from "@/components/math/Art";
 import Choices from "@/components/math/Choices";
 import Button from "@/components/ui/Button";
@@ -34,6 +34,8 @@ function Friend({
   selected,
   bounce,
   onClick,
+  buttonRef,
+  onFocus,
 }: {
   index: number;
   cookies: number[];
@@ -41,10 +43,14 @@ function Friend({
   selected?: boolean;
   bounce?: boolean;
   onClick?: () => void;
+  buttonRef?: React.Ref<HTMLButtonElement>;
+  onFocus?: () => void;
 }) {
   const kind = ANIMALS[index % ANIMALS.length];
   return (
     <motion.button
+      ref={buttonRef}
+      onFocus={onFocus}
       type="button"
       onClick={onClick}
       disabled={!onClick}
@@ -75,6 +81,7 @@ function ShareView({ level, onWin, onLevels }: { level: ShareLevel } & Omit<Leve
   const fresh = () => Array.from({ length: level.cookies }, () => -1 as Where);
   const [where, setWhere] = useState<Where[]>(fresh);
   const [selected, setSelected] = useState(0);
+  const plates = useRef<(HTMLButtonElement | null)[]>([]);
   const [mistakes, setMistakes] = useState(0);
   const [message, setMessage] = useState<string | null>(null);
   const [bounce, setBounce] = useState<number[]>([]);
@@ -135,8 +142,11 @@ function ShareView({ level, onWin, onLevels }: { level: ShareLevel } & Omit<Leve
   useGameKeys({
     enabled: !done,
     onMove: (d) => {
-      if (d === "left") setSelected((s) => (s + level.plates - 1) % level.plates);
-      if (d === "right") setSelected((s) => (s + 1) % level.plates);
+      if (d === "left" || d === "right") {
+        const next = (selected + (d === "left" ? level.plates - 1 : 1)) % level.plates;
+        plates.current[next]?.focus();
+        setSelected(next);
+      }
       if (d === "down") give(selected);
     },
     onEnter: () => give(selected),
@@ -176,6 +186,8 @@ function ShareView({ level, onWin, onLevels }: { level: ShareLevel } & Omit<Leve
             <Friend
               key={p}
               index={p}
+              buttonRef={(button) => { plates.current[p] = button; }}
+              onFocus={() => setSelected(p)}
               cookies={where.map((w, id) => (w === p ? id : -1)).filter((id) => id >= 0)}
               mood={max === 0 ? "wait" : allEqual || counts[p] === max ? "happy" : "sad"}
               selected={selected === p && !done}

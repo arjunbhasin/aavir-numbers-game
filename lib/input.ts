@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type RefObject } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type RefObject } from "react";
 import type { Dir } from "./grid";
 
 const KEY_DIRS: Record<string, Dir> = {
@@ -26,6 +26,10 @@ export type GameKeyHandlers = {
   enabled?: boolean;
 };
 
+function isEditing(target: EventTarget | null): boolean {
+  return target instanceof HTMLElement && !!target.closest('input, textarea, select, [contenteditable="true"]');
+}
+
 /** Arrow keys / WASD to move, U or Z to undo, R to restart, Enter to continue. */
 export function useGameKeys(handlers: GameKeyHandlers) {
   const ref = useRef(handlers);
@@ -37,7 +41,10 @@ export function useGameKeys(handlers: GameKeyHandlers) {
     const onKey = (e: KeyboardEvent) => {
       const h = ref.current;
       if (h.enabled === false) return;
+      if (e.defaultPrevented || isEditing(e.target)) return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.target instanceof HTMLElement && e.target.closest('[aria-modal="true"]')) return;
+      if (e.key === "Enter" && e.target instanceof HTMLElement && e.target.closest("button, a")) return;
       const dir = KEY_DIRS[e.key];
       if (dir && h.onMove) {
         e.preventDefault();
@@ -144,11 +151,25 @@ export function useHistory<S>(initial: S) {
 
 /** setTimeout that is cancelled automatically when the component unmounts. */
 export function useLater() {
-  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
-  useEffect(() => () => timers.current.forEach(clearTimeout), []);
-  return (fn: () => void, ms: number) => {
-    timers.current.push(setTimeout(fn, ms));
-  };
+  return useCancellableLater().schedule;
+}
+
+/** Timers that can also be cancelled when a game changes mode without unmounting. */
+export function useCancellableLater() {
+  const timers = useRef(new Set<ReturnType<typeof setTimeout>>());
+  const cancel = useCallback(() => {
+    timers.current.forEach(clearTimeout);
+    timers.current.clear();
+  }, []);
+  const schedule = useCallback((fn: () => void, ms: number) => {
+    const timer = setTimeout(() => {
+      timers.current.delete(timer);
+      fn();
+    }, ms);
+    timers.current.add(timer);
+  }, []);
+  useEffect(() => cancel, [cancel]);
+  return { schedule, cancel };
 }
 
 /**
@@ -163,7 +184,9 @@ export function useKeydown(handler: (e: KeyboardEvent) => void, enabled = true) 
   });
   useEffect(() => {
     if (!enabled) return;
-    const on = (e: KeyboardEvent) => ref.current(e);
+    const on = (e: KeyboardEvent) => {
+      if (!e.defaultPrevented && !isEditing(e.target)) ref.current(e);
+    };
     window.addEventListener("keydown", on);
     return () => window.removeEventListener("keydown", on);
   }, [enabled]);

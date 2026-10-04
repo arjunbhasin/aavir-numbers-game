@@ -27,9 +27,11 @@ export type Scatter = { value: number; x: number; y: number; rotate: number; siz
  * Numbers 1..count spread over a box without overlapping:
  * each number gets its own cell of a grid, then a little random wiggle inside it.
  */
-export function scatterNumbers(rng: Rng, count: number, aspect: number, wiggle: number): Scatter {
-  const cols = Math.ceil(Math.sqrt(count * aspect));
+export function scatterNumbers(rng: Rng, count: number, aspect: number, wiggle: number, geometry?: { width: number; height: number; targetSize: number }): Scatter {
+  const cols = Math.min(Math.ceil(Math.sqrt(count * aspect)), geometry ? Math.max(1, Math.floor(geometry.width / (geometry.targetSize + 8))) : Infinity);
   const rows = Math.ceil(count / cols);
+  const jitterX = geometry ? Math.min(1, wiggle) * Math.max(0, 1 - (geometry.targetSize + 8) * cols / geometry.width) : wiggle;
+  const jitterY = geometry ? Math.min(1, wiggle) * Math.max(0, 1 - (geometry.targetSize + 8) * rows / geometry.height) : wiggle;
   const cells = shuffle(
     rng,
     Array.from({ length: cols * rows }, (_, i) => i),
@@ -39,8 +41,8 @@ export function scatterNumbers(rng: Rng, count: number, aspect: number, wiggle: 
     const c = cell % cols;
     return {
       value: i + 1,
-      x: ((c + 0.5 + (rng() - 0.5) * wiggle) / cols) * 100,
-      y: ((r + 0.5 + (rng() - 0.5) * wiggle) / rows) * 100,
+      x: ((c + 0.5 + (rng() - 0.5) * jitterX) / cols) * 100,
+      y: ((r + 0.5 + (rng() - 0.5) * jitterY) / rows) * 100,
       rotate: (rng() - 0.5) * 40 * wiggle,
       size: 0.85 + rng() * 0.4 * wiggle,
       color: randInt(rng, 0, 5),

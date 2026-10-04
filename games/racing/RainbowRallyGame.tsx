@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import Button from "@/components/ui/Button";
 import { ArrowIcon, GridIcon, RestartIcon, StarIcon } from "@/components/ui/Icons";
@@ -55,6 +55,11 @@ function hudOf(race: Race): Hud {
 }
 
 function RaceView({ level, onWin, onLevels }: LevelProps) {
+  const reducedMotion = useReducedMotion();
+  const reducedMotionRef = useRef(reducedMotion);
+  useEffect(() => {
+    reducedMotionRef.current = reducedMotion;
+  }, [reducedMotion]);
   const wrap = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const input = useRef<Input>({ left: false, right: false });
@@ -76,6 +81,7 @@ function RaceView({ level, onWin, onLevels }: LevelProps) {
     const engine = createEngineSound();
     let size = { w: 0, h: 0 };
     let raf = 0;
+    let stopped = false;
     let last = performance.now();
     let lastHud = 0;
     let finishTimer: ReturnType<typeof setTimeout> | undefined;
@@ -93,6 +99,7 @@ function RaceView({ level, onWin, onLevels }: LevelProps) {
       el.style.height = `${h}px`;
       ctx.setTransform(scale, 0, 0, scale, 0, 0);
       size = { w, h };
+      if (stopped) drawRace(ctx, race, sprites, w, h, 0, !!reducedMotionRef.current);
     };
     resize();
     const ro = new ResizeObserver(resize);
@@ -100,6 +107,7 @@ function RaceView({ level, onWin, onLevels }: LevelProps) {
     window.addEventListener("resize", resize);
 
     const frame = (now: number) => {
+      if (stopped) return;
       raf = requestAnimationFrame(frame);
       const dt = (now - last) / 1000;
       last = now;
@@ -119,14 +127,19 @@ function RaceView({ level, onWin, onLevels }: LevelProps) {
           playSound("win");
           const { rank } = race.finished!;
           finishTimer = setTimeout(
-            () => onWinRef.current(starsForRank(rank), `${RANK_NAMES[rank - 1]} place! You collected ${race.stars} stars.`),
+            () => {
+              stopped = true;
+              cancelAnimationFrame(raf);
+              engine.stop();
+              onWinRef.current(starsForRank(rank), `${RANK_NAMES[rank - 1]} place! You collected ${race.stars} stars.`);
+            },
             1600,
           );
         }
       }
       // the hum fades out once you've crossed the line
       engine.setSpeed(race.finished ? 0 : race.speed / MAX_SPEED);
-      drawRace(ctx, race, sprites, size.w, size.h, now / 1000);
+      drawRace(ctx, race, sprites, size.w, size.h, now / 1000, !!reducedMotionRef.current);
       if (now - lastHud > 100) {
         lastHud = now;
         setHud(hudOf(race));

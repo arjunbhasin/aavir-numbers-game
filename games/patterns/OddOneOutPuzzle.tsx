@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import FigureView from "@/components/shapes/FigureView";
 import type { PuzzleProps } from "@/components/shapes/PatternGame";
 import { useGameKeys, useLater } from "@/lib/input";
@@ -25,6 +25,7 @@ export default function OddOneOutPuzzle({ seed, difficulty, onSolved }: PuzzlePr
   const later = useLater();
   const [solved, setSolved] = useState(false);
   const [focus, setFocus] = useState(-1);
+  const buttons = useRef<(HTMLButtonElement | null)[]>([]);
 
   const pick = (i: number) => {
     if (solved || wrong.includes(i)) return;
@@ -40,7 +41,17 @@ export default function OddOneOutPuzzle({ seed, difficulty, onSolved }: PuzzlePr
 
   useGameKeys({
     enabled: !solved,
-    onMove: (d) => setFocus((f) => (d === "left" || d === "up" ? (f <= 0 ? p.items.length - 1 : f - 1) : (f + 1) % p.items.length)),
+    onMove: (d) => {
+      const direction = d === "left" || d === "up" ? -1 : 1;
+      let next = focus;
+      for (let tries = 0; tries < p.items.length; tries++) {
+        next = direction < 0 ? (next <= 0 ? p.items.length - 1 : next - 1) : (next + 1) % p.items.length;
+        if (wrong.includes(next)) continue;
+        buttons.current[next]?.focus();
+        setFocus(next);
+        break;
+      }
+    },
     onEnter: () => focus >= 0 && pick(focus),
   });
 
@@ -53,6 +64,8 @@ export default function OddOneOutPuzzle({ seed, difficulty, onSolved }: PuzzlePr
           return (
             <motion.button
               key={i}
+              ref={(button) => { buttons.current[i] = button; }}
+              onFocus={() => setFocus(i)}
               type="button"
               onClick={() => pick(i)}
               disabled={solved || isWrong}

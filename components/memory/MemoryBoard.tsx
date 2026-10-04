@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { useGameKeys, useLater } from "@/lib/input";
 import { playSound } from "@/lib/sound";
 
@@ -29,6 +29,7 @@ export default function MemoryBoard({
   const [matched, setMatched] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
   const [focus, setFocus] = useState(-1);
+  const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   const later = useLater();
 
   const flip = (i: number) => {
@@ -58,15 +59,19 @@ export default function MemoryBoard({
 
   useGameKeys({
     enabled,
-    onMove: (d) =>
-      setFocus((f) => {
-        const n = cards.length;
-        if (f < 0) return 0;
-        if (d === "left") return (f + n - 1) % n;
-        if (d === "right") return (f + 1) % n;
-        if (d === "up") return (f - cols + n) % n;
-        return (f + cols) % n;
-      }),
+    onMove: (d) => {
+      const n = cards.length;
+      const delta = d === "left" ? -1 : d === "right" ? 1 : d === "up" ? -cols : cols;
+      let next = focus < 0 ? 0 : (focus + delta + n) % n;
+      for (let tries = 0; tries < n; tries++) {
+        if (!(matched.includes(next))) {
+          buttons.current[next]?.focus();
+          setFocus(next);
+          break;
+        }
+        next = (next + (delta < 0 ? -1 : 1) + n) % n;
+      }
+    },
     onEnter: () => focus >= 0 && flip(focus),
   });
 
@@ -81,6 +86,8 @@ export default function MemoryBoard({
           return (
             <button
               key={card.id}
+              ref={(button) => { buttons.current[i] = button; }}
+              onFocus={() => setFocus(i)}
               type="button"
               onClick={() => flip(i)}
               aria-label={faceUp ? card.label : `Card ${i + 1}, face down`}

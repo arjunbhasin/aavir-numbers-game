@@ -1,26 +1,44 @@
-import { pick, randInt, shuffle, type Rng } from "@/lib/random";
+import { makeRng, pick, randInt, shuffle, type Rng } from "@/lib/random";
 import type { Difficulty } from "@/games/patterns/generators";
 import { VOWELS, WORDS, WORD_LIST, isVowel, rhymeOf } from "./words";
 
 const CONSONANTS = "bcdfghjklmnprstvwy";
-const byLength = (min: number, max: number) => WORD_LIST.filter((w) => w.length >= min && w.length <= max);
+const wordSet = new Set(WORD_LIST);
+const lengthPools = new Map<string, string[]>();
+function byLength(min: number, max: number): string[] {
+  const key = `${min}:${max}`;
+  let pool = lengthPools.get(key);
+  if (!pool) {
+    pool = WORD_LIST.filter((w) => w.length >= min && w.length <= max);
+    lengthPools.set(key, pool);
+  }
+  return pool;
+}
+
+/** Bound retries; a deterministic fallback keeps a bad random stream from freezing play. */
+function* generationRngs(rng: Rng): Generator<Rng> {
+  for (let i = 0; i < 64; i++) yield rng;
+  const fallback = makeRng(0);
+  for (let i = 0; i < 64; i++) yield fallback;
+}
 
 /* ---------- Missing Letter ---------- */
 
 export type MissingLetterPuzzle = { word: string; gap: number; options: string[] };
 
 export function makeMissingLetter(rng: Rng, d: Difficulty): MissingLetterPuzzle {
-  for (;;) {
+  for (rng of generationRngs(rng)) {
     const word = pick(rng, d === 2 ? byLength(4, 4) : byLength(3, 3));
     const gap = d === 0 ? 1 : randInt(rng, 0, word.length - 1);
     const right = word[gap];
     if (d === 0 && !isVowel(right)) continue;
     const pool = (isVowel(right) ? VOWELS : CONSONANTS).split("").filter((c) => c !== right);
     // a wrong letter must not make another picture word (b_at → hat would be confusing)
-    const ok = pool.filter((c) => !WORD_LIST.includes(word.slice(0, gap) + c + word.slice(gap + 1)));
+    const ok = pool.filter((c) => !wordSet.has(word.slice(0, gap) + c + word.slice(gap + 1)));
     if (ok.length < 2) continue;
     return { word, gap, options: shuffle(rng, [right, ...shuffle(rng, ok).slice(0, 2)]) };
   }
+  throw new Error("Could not generate a valid Missing Letter puzzle");
 }
 
 /* ---------- Spell It ---------- */
@@ -32,7 +50,11 @@ export function makeSpell(rng: Rng, d: Difficulty): SpellPuzzle {
   const extra = d === 2 ? [pick(rng, (CONSONANTS + VOWELS).split("").filter((c) => !word.includes(c)))] : [];
   const letters = [...word.split(""), ...extra];
   let tiles = shuffle(rng, letters);
-  while (tiles.join("") === letters.join("")) tiles = shuffle(rng, letters);
+  for (let tries = 0; tries < 8 && tiles.join("") === letters.join(""); tries++) tiles = shuffle(rng, letters);
+  if (tiles.join("") === letters.join("")) {
+    const other = tiles.findIndex((ch) => ch !== tiles[0]);
+    [tiles[0], tiles[other]] = [tiles[other], tiles[0]];
+  }
   return { word, tiles, given: d === 0 ? 1 : 0 };
 }
 
@@ -61,20 +83,31 @@ export function oneApart(a: string, b: string): boolean {
   return diff === 1;
 }
 
+const neighborCache = new Map<string, string[]>();
+function neighbors(word: string): string[] {
+  let next = neighborCache.get(word);
+  if (!next) {
+    next = WORD_LIST.filter((w) => oneApart(word, w));
+    neighborCache.set(word, next);
+  }
+  return next;
+}
+
 export type LadderPuzzle = { words: string[] }; // start, then each new word
 
 export function makeLadder(rng: Rng, d: Difficulty): LadderPuzzle {
   const steps = d + 1;
-  for (;;) {
+  for (rng of generationRngs(rng)) {
     const path = [pick(rng, WORD_LIST)];
     while (path.length <= steps) {
       const last = path[path.length - 1];
-      const next = WORD_LIST.filter((w) => oneApart(last, w) && !path.includes(w));
+      const next = neighbors(last).filter((w) => !path.includes(w));
       if (!next.length) break;
       path.push(pick(rng, next));
     }
     if (path.length === steps + 1) return { words: path };
   }
+  throw new Error("Could not generate a valid Word Ladder puzzle");
 }
 
 export function changedIndex(a: string, b: string): number {
@@ -86,7 +119,7 @@ export function ladderOptions(rng: Rng, from: string, to: string): string[] {
   const i = changedIndex(from, to);
   const right = to[i];
   const pool = (isVowel(right) ? VOWELS : CONSONANTS).split("").filter((c) => c !== right && c !== from[i]);
-  const ok = pool.filter((c) => !WORD_LIST.includes(from.slice(0, i) + c + from.slice(i + 1)));
+  const ok = pool.filter((c) => !wordSet.has(from.slice(0, i) + c + from.slice(i + 1)));
   return shuffle(rng, [right, ...shuffle(rng, ok).slice(0, 2)]);
 }
 
@@ -120,7 +153,7 @@ export function makeSearch(rng: Rng, d: Difficulty): SearchPuzzle {
   const size = d === 0 ? 5 : 6;
   const count = d === 2 ? 4 : 3;
   const dirs: Placement["dir"][] = d === 0 ? ["across"] : ["across", "down"];
-  for (;;) {
+  for (rng of generationRngs(rng)) {
     const grid: string[][] = Array.from({ length: size }, () => Array(size).fill(""));
     const words: Placement[] = [];
     for (const word of shuffle(rng, byLength(3, size === 5 ? 4 : 5))) {
@@ -147,6 +180,7 @@ export function makeSearch(rng: Rng, d: Difficulty): SearchPuzzle {
     // each hidden word must appear exactly once, so there is only one place to find it
     if (words.every((w) => countInGrid(grid, w.word, dirs) === 1)) return { size, grid, words };
   }
+  throw new Error("Could not generate a valid Word Search puzzle");
 }
 
 /* ---------- Mini Crossword ---------- */
@@ -191,7 +225,7 @@ export function makeCrossword(rng: Rng, d: Difficulty): Crossword {
   const count = d + 2;
   const maxSize = d === 2 ? 6 : 5;
   const pool = d === 0 ? byLength(3, 3) : byLength(3, 4);
-  for (;;) {
+  for (rng of generationRngs(rng)) {
     const first = pick(rng, pool);
     let entries: Omit<Entry, "num">[] = [{ word: first, r: 0, c: 0, dir: "across" }];
     for (let tries = 0; tries < 200 && entries.length < count; tries++) {
@@ -230,6 +264,7 @@ export function makeCrossword(rng: Rng, d: Difficulty): Crossword {
     const cols = Math.max(...numbered.map((e) => e.c + (e.dir === "across" ? e.word.length : 1)));
     return { rows, cols, entries: numbered.sort((a, b) => a.num - b.num || (a.dir === "across" ? -1 : 1)) };
   }
+  throw new Error("Could not generate a valid Crossword puzzle");
 }
 
 /** Letter tiles: every letter the crossword needs, plus two that it doesn't. */

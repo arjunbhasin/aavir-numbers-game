@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Fredoka } from "next/font/google";
 import "./globals.css";
+import MotionPreferences from "@/components/ui/MotionPreferences";
 import ProgressHydrator from "@/components/ui/ProgressHydrator";
 
 const fredoka = Fredoka({ subsets: ["latin"], variable: "--font-fredoka", weight: ["400", "500", "600", "700"] });
@@ -17,8 +18,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   themeColor: "#bfe6ff",
   viewportFit: "cover",
 };
@@ -27,8 +26,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={fredoka.variable}>
       <body className="font-sans antialiased min-h-dvh">
-        <ProgressHydrator />
-        {children}
+        <MotionPreferences>
+          <ProgressHydrator />
+          {children}
+        </MotionPreferences>
       </body>
     </html>
   );

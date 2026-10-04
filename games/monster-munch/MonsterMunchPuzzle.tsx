@@ -76,7 +76,7 @@ export default function MonsterMunchPuzzle({ seed, difficulty, onSolved }: Puzzl
               <div className="w-16 h-16 shrink-0">
                 <Monster color={row.color} />
               </div>
-              <div className="flex gap-1">
+              <div className="flex flex-wrap gap-1 min-w-0">
                 {Array.from({ length: row.n }, (_, i) => (
                   <div key={i} className={`w-7 h-7 sm:w-9 sm:h-9 ${k === 0 && i >= p.b && solved ? "rounded-full ring-4 ring-sun" : ""}`}>
                     <Apple />

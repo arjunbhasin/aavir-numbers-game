@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { PuzzleProps } from "@/components/shapes/PatternGame";
 import { PictureCard } from "@/components/words/LetterTile";
 import { pictureFor } from "@/components/words/WordPictures";
@@ -15,6 +15,7 @@ export default function RhymeTimePuzzle({ seed, difficulty, onSolved }: PuzzlePr
   const [found, setFound] = useState<string[]>([]);
   const [wrong, setWrong] = useState<string[]>([]);
   const [focus, setFocus] = useState(-1);
+  const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   const later = useLater();
   const solved = found.length === p.rhymes.length;
 
@@ -35,7 +36,17 @@ export default function RhymeTimePuzzle({ seed, difficulty, onSolved }: PuzzlePr
 
   useGameKeys({
     enabled: !solved,
-    onMove: (d) => setFocus((f) => (d === "left" || d === "up" ? (f <= 0 ? p.choices.length - 1 : f - 1) : (f + 1) % p.choices.length)),
+    onMove: (d) => {
+      const direction = d === "left" || d === "up" ? -1 : 1;
+      let next = focus;
+      for (let tries = 0; tries < p.choices.length; tries++) {
+        next = direction < 0 ? (next <= 0 ? p.choices.length - 1 : next - 1) : (next + 1) % p.choices.length;
+        if (found.includes(p.choices[next]) || wrong.includes(p.choices[next])) continue;
+        buttons.current[next]?.focus();
+        setFocus(next);
+        break;
+      }
+    },
     onEnter: () => focus >= 0 && tap(p.choices[focus]),
   });
 
@@ -63,6 +74,8 @@ export default function RhymeTimePuzzle({ seed, difficulty, onSolved }: PuzzlePr
           return (
             <motion.button
               key={w}
+              ref={(button) => { buttons.current[i] = button; }}
+              onFocus={() => setFocus(i)}
               type="button"
               onClick={() => tap(w)}
               disabled={solved || isFound || isWrong}

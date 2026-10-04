@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { TenFrame } from "@/components/math/AddArt";
 import type { PuzzleProps } from "@/components/shapes/PatternGame";
 import { useGameKeys, useLater } from "@/lib/input";
@@ -16,6 +16,7 @@ export default function MakeTenPuzzle({ seed, difficulty, onSolved }: PuzzleProp
   const [selected, setSelected] = useState<number | null>(null);
   const [shaking, setShaking] = useState<number[]>([]);
   const [focus, setFocus] = useState(-1);
+  const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   const [mistakes, setMistakes] = useState(0);
   const [message, setMessage] = useState<{ text: string; good: boolean } | null>(null);
   const later = useLater();
@@ -55,15 +56,19 @@ export default function MakeTenPuzzle({ seed, difficulty, onSolved }: PuzzleProp
 
   useGameKeys({
     enabled: !done,
-    onMove: (d) =>
-      setFocus((f) => {
-        const n = p.cards.length;
-        if (f < 0) return 0;
-        if (d === "left") return (f + n - 1) % n;
-        if (d === "right") return (f + 1) % n;
-        if (d === "up") return (f - cols + n) % n;
-        return (f + cols) % n;
-      }),
+    onMove: (d) => {
+      const n = p.cards.length;
+      const delta = d === "left" ? -1 : d === "right" ? 1 : d === "up" ? -cols : cols;
+      let next = focus < 0 ? 0 : (focus + delta + n) % n;
+      for (let tries = 0; tries < n; tries++) {
+        if (!(gone.includes(next))) {
+          buttons.current[next]?.focus();
+          setFocus(next);
+          break;
+        }
+        next = (next + (delta < 0 ? -1 : 1) + n) % n;
+      }
+    },
     onEnter: () => focus >= 0 && tap(focus),
   });
 
@@ -78,6 +83,8 @@ export default function MakeTenPuzzle({ seed, difficulty, onSolved }: PuzzleProp
           <AnimatePresence key={i}>
             {!gone.includes(i) ? (
               <motion.button
+                ref={(button) => { buttons.current[i] = button; }}
+                onFocus={() => setFocus(i)}
                 type="button"
                 onClick={() => tap(i)}
                 exit={{ scale: 0, rotate: 20, opacity: 0 }}

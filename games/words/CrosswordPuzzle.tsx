@@ -132,7 +132,7 @@ export default function CrosswordPuzzle({ seed, difficulty, onSolved }: PuzzlePr
           break;
         }
       }
-    } else if (e.key === "Tab") {
+    } else if (e.key === "Enter" && !(e.target instanceof HTMLButtonElement) && !(e.target instanceof HTMLAnchorElement)) {
       e.preventDefault();
       goToNextOpen(done.filter((i) => i !== active).concat(active));
     }
@@ -219,7 +219,7 @@ export default function CrosswordPuzzle({ seed, difficulty, onSolved }: PuzzlePr
           ⌫
         </button>
       </div>
-      <KeyboardHint touch="Tap a square, then tap the letters. ⌫ deletes.">Type letters · Backspace deletes · arrows move · Tab goes to the next word</KeyboardHint>
+      <KeyboardHint touch="Tap a square, then tap the letters. ⌫ deletes.">Type letters · Backspace deletes · arrows move · Enter goes to the next word</KeyboardHint>
     </div>
   );
 }

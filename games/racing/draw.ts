@@ -98,7 +98,8 @@ function sprite(c: CanvasRenderingContext2D, img: SpriteImage, worldWidth: numbe
   c.drawImage(img.canvas, 0, 0, img.canvas.width, srcH, dx, dy, destW, destH - hidden);
 }
 
-export function drawRace(c: CanvasRenderingContext2D, race: Race, sprites: SpriteSet, w: number, h: number, time: number) {
+export function drawRace(c: CanvasRenderingContext2D, race: Race, sprites: SpriteSet, w: number, h: number, time: number, reducedMotion = false) {
+  if (reducedMotion) time = 0;
   const pal = PALETTES[race.theme.id];
   background(c, w, h, pal, race.skyOffset);
 
@@ -192,8 +193,8 @@ export function drawRace(c: CanvasRenderingContext2D, race: Race, sprites: Sprit
   }
 
   // the player's car, with a little bounce and lean
-  const bounce = race.speed > 0 ? Math.sin(time * 30) * 1.2 * (race.speed / 12000) : 0;
-  const wobble = race.bump > 0 ? Math.sin(time * 50) * 0.08 : 0;
+  const bounce = !reducedMotion && race.speed > 0 ? Math.sin(time * 30) * 1.2 * (race.speed / 12000) : 0;
+  const wobble = !reducedMotion && race.bump > 0 ? Math.sin(time * 50) * 0.08 : 0;
   const lean = Math.max(-0.12, Math.min(0.12, race.steerVel * 0.05)) + wobble;
   const carW = (w / 2) * CAR_WIDTH * ROAD_WIDTH * (CAMERA_DEPTH / PLAYER_Z);
   const img = sprites.robot;
@@ -203,7 +204,7 @@ export function drawRace(c: CanvasRenderingContext2D, race: Race, sprites: Sprit
   c.rotate(lean);
   c.drawImage(img.canvas, -carW / 2, -carH, carW, carH);
   c.restore();
-  if (race.boost > 0) {
+  if (race.boost > 0 && !reducedMotion) {
     // speed lines while boosting
     c.strokeStyle = "rgba(255,255,255,0.7)";
     c.lineWidth = 3;

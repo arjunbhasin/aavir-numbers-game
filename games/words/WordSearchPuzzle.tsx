@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { PuzzleProps } from "@/components/shapes/PatternGame";
 import { pictureFor } from "@/components/words/WordPictures";
 import { useGameKeys, useLater } from "@/lib/input";
@@ -30,6 +30,7 @@ export default function WordSearchPuzzle({ seed, difficulty, onSolved }: PuzzleP
   const [found, setFound] = useState<number[]>([]);
   const [start, setStart] = useState<Cell | null>(null);
   const [hover, setHover] = useState<Cell | null>(null);
+  const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   const [cursor, setCursor] = useState<Cell>({ r: 0, c: 0 });
   const [flash, setFlash] = useState<Cell[] | null>(null);
   const [mistakes, setMistakes] = useState(0);
@@ -75,6 +76,7 @@ export default function WordSearchPuzzle({ seed, difficulty, onSolved }: PuzzleP
         c: Math.max(0, Math.min(p.size - 1, cursor.c + (d === "right" ? 1 : d === "left" ? -1 : 0))),
       };
       setCursor(next);
+      buttons.current[next.r * p.size + next.c]?.focus();
       if (start) setHover(next);
     },
     onEnter: () => choose(cursor),
@@ -104,10 +106,14 @@ export default function WordSearchPuzzle({ seed, difficulty, onSolved }: PuzzleP
               <motion.button
                 key={`${r}-${c}`}
                 type="button"
-                tabIndex={-1}
+                ref={(button) => { buttons.current[r * p.size + c] = button; }}
+                tabIndex={isCursor ? 0 : -1}
+                onFocus={() => setCursor({ r, c })}
+                onClick={(e) => { if (e.detail === 0) choose({ r, c }); }}
                 aria-label={`${ch}, row ${r + 1} column ${c + 1}`}
                 onPointerDown={(e) => {
                   e.preventDefault();
+                  e.currentTarget.focus({ preventScroll: true });
                   // touch screens lock the pointer to the first letter; release it so dragging reaches other letters
                   if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
                   setDragging(true);

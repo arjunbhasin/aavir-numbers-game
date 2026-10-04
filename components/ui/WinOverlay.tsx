@@ -2,7 +2,8 @@
 
 import { useKeydown } from "@/lib/input";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect } from "react";
+import { createPortal } from "react-dom";
+import { useEffect, useRef } from "react";
 import { celebrate } from "@/lib/confetti";
 import { playSound } from "@/lib/sound";
 import Button from "./Button";
@@ -29,10 +30,21 @@ export default function WinOverlay({
   onAgain?: () => void;
   onLevels?: () => void;
 }) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const confettiRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     if (!open) return;
+    const previous = document.activeElement;
+    const dialog = dialogRef.current;
+    dialog?.showModal();
+    dialog?.querySelector<HTMLButtonElement>("button")?.focus();
     playSound("win");
-    celebrate();
+    const stopCelebration = celebrate(confettiRef.current);
+    return () => {
+      stopCelebration?.();
+      dialog?.close();
+      if (previous instanceof HTMLElement && previous.isConnected) previous.focus();
+    };
   }, [open]);
 
   useKeydown((e: KeyboardEvent) => {
@@ -46,11 +58,30 @@ export default function WinOverlay({
 
   const cheer = CHEERS[stars ?? 0] ?? CHEERS[0];
 
-  return (
+  if (typeof document === "undefined") return null;
+  return createPortal(
     <AnimatePresence>
       {open && (
-        <motion.div
-          className="fixed inset-0 z-50 grid place-items-center bg-ink/40 backdrop-blur-sm p-4"
+        <motion.dialog
+          ref={dialogRef}
+          onCancel={(e) => {
+            e.preventDefault();
+            onLevels?.();
+          }}
+          onKeyDown={(e) => {
+            if (e.key !== "Tab") return;
+            const buttons = Array.from(e.currentTarget.querySelectorAll<HTMLButtonElement>("button:not(:disabled)"));
+            const first = buttons[0];
+            const last = buttons.at(-1);
+            if (e.shiftKey && document.activeElement === first) {
+              e.preventDefault();
+              last?.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+              e.preventDefault();
+              first?.focus();
+            }
+          }}
+          className="fixed inset-0 z-50 m-0 w-full h-full max-w-none max-h-none border-0 grid place-items-center bg-ink/40 backdrop-blur-sm p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -79,12 +110,12 @@ export default function WinOverlay({
             )}
             <div className="flex flex-wrap justify-center gap-3 mt-2">
               {onNext && (
-                <Button accent="grass" size="lg" onClick={onNext} icon={<NextIcon className="w-7 h-7" />} autoFocus>
+                <Button accent="grass" size="lg" onClick={onNext} icon={<NextIcon className="w-7 h-7" />}>
                   Next
                 </Button>
               )}
               {onAgain && (
-                <Button accent={onNext ? "white" : "grass"} size="lg" onClick={onAgain} icon={<RestartIcon className="w-7 h-7" />} autoFocus={!onNext}>
+                <Button accent={onNext ? "white" : "grass"} size="lg" onClick={onAgain} icon={<RestartIcon className="w-7 h-7" />}>
                   Again
                 </Button>
               )}
@@ -95,8 +126,9 @@ export default function WinOverlay({
               )}
             </div>
           </motion.div>
-        </motion.div>
+          <canvas ref={confettiRef} aria-hidden="true" className="fixed inset-0 w-full h-full pointer-events-none" />
+        </motion.dialog>
       )}
-    </AnimatePresence>
+    </AnimatePresence>, document.body
   );
 }

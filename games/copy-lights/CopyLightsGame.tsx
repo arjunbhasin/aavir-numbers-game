@@ -9,7 +9,7 @@ import ModePicker from "@/components/ui/ModePicker";
 import WinOverlay from "@/components/ui/WinOverlay";
 import { starsForMistakes } from "@/components/shapes/PatternGame";
 import type { Dir } from "@/lib/grid";
-import { useGameKeys, useLater } from "@/lib/input";
+import { useGameKeys, useCancellableLater } from "@/lib/input";
 import { useProgress } from "@/lib/progress";
 import { makeRng, randomSeed, type Rng } from "@/lib/random";
 import { playSound, playTone } from "@/lib/sound";
@@ -40,7 +40,7 @@ export default function CopyLightsGame() {
   const [mistakes, setMistakes] = useState(0);
   const [won, setWon] = useState<number | null>(null);
   const record = useProgress((s) => s.recordStars);
-  const later = useLater();
+  const { schedule: later, cancel: cancelLater } = useCancellableLater();
 
   const flash = (pad: number, ms: number) => {
     setLit(pad);
@@ -57,6 +57,9 @@ export default function CopyLightsGame() {
   };
 
   const start = (m: number) => {
+    cancelLater();
+    setLit(null);
+    setInput(0);
     const r = makeRng(randomSeed());
     const first = extendSequence(r, extendSequence(r, []));
     setMode(m);
@@ -64,6 +67,14 @@ export default function CopyLightsGame() {
     setSeq(first);
     setMistakes(0);
     setWon(null);
+    setPhase("idle");
+  };
+
+  const changeLevel = () => {
+    cancelLater();
+    setLit(null);
+    setWon(null);
+    setMode(null);
     setPhase("idle");
   };
 
@@ -96,7 +107,7 @@ export default function CopyLightsGame() {
   };
 
   useGameKeys({
-    enabled: phase === "play" || phase === "idle",
+    enabled: mode !== null && (phase === "play" || phase === "idle"),
     onMove: (d) => press(PADS.findIndex((p) => p.dir === d)),
     onEnter: () => {
       if (phase === "idle" && mode !== null) playBack(seq, mode);
@@ -125,10 +136,7 @@ export default function CopyLightsGame() {
           <motion.button
             key={pad.dir}
             type="button"
-            onPointerDown={(e) => {
-              e.preventDefault();
-              press(i);
-            }}
+            onClick={() => press(i)}
             aria-label={`${pad.dir} light`}
             disabled={phase !== "play"}
             animate={{ scale: lit === i ? 1.1 : 1 }}
@@ -153,12 +161,12 @@ export default function CopyLightsGame() {
             Start
           </Button>
         )}
-        <Button accent="white" onClick={() => setMode(null)} icon={<GridIcon className="w-6 h-6" />}>
+        <Button accent="white" onClick={changeLevel} icon={<GridIcon className="w-6 h-6" />}>
           Change level
         </Button>
       </div>
       <KeyboardHint touch="Tap the lights in the same order.">Enter starts · use the arrow keys, or tap the lights</KeyboardHint>
-      <WinOverlay open={won !== null} stars={won ?? 0} detail={`${goal} lights in a row!`} onAgain={() => start(mode)} onLevels={() => setMode(null)} />
+      <WinOverlay open={won !== null} stars={won ?? 0} detail={`${goal} lights in a row!`} onAgain={() => start(mode)} onLevels={changeLevel} />
     </div>
   );
 }

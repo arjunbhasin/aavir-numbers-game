@@ -25,14 +25,25 @@ export default function Choices<T>({
   shadow?: string;
 }) {
   const [focus, setFocus] = useState(-1);
+  const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   const typed = useRef({ text: "", timer: undefined as ReturnType<typeof setTimeout> | undefined });
   const numeric = choices.every((c) => typeof c.value === "number");
   const letters = choices.every((c) => typeof c.value === "string" && /^[a-z]$/.test(c.value));
+  const choiceKey = JSON.stringify(choices.map((c) => c.value));
 
-  useEffect(() => () => clearTimeout(typed.current.timer), []);
+  useEffect(() => {
+    const current = typed.current;
+    clearTimeout(current.timer);
+    current.text = "";
+    return () => clearTimeout(current.timer);
+  }, [disabled, choiceKey]);
 
   const pickIndex = (i: number) => {
-    if (i >= 0 && i < choices.length && !wrong.includes(i)) onPick(choices[i].value, i);
+    if (!disabled && i >= 0 && i < choices.length && !wrong.includes(i)) {
+      clearTimeout(typed.current.timer);
+      typed.current.text = "";
+      onPick(choices[i].value, i);
+    }
   };
   // the "wait for a second digit" timer must use the latest choices, not the ones from when it started
   const pickLatest = useRef(pickIndex);
@@ -79,10 +90,19 @@ export default function Choices<T>({
 
   useGameKeys({
     enabled: !disabled,
-    onMove: (d) =>
-      setFocus((f) => (d === "left" || d === "up" ? (f <= 0 ? choices.length - 1 : f - 1) : (f + 1) % choices.length)),
+    onMove: (d) => {
+      const direction = d === "left" || d === "up" ? -1 : 1;
+      let next = focus;
+      for (let tries = 0; tries < choices.length; tries++) {
+        next = direction < 0 ? (next <= 0 ? choices.length - 1 : next - 1) : (next + 1) % choices.length;
+        if (wrong.includes(next)) continue;
+        buttons.current[next]?.focus();
+        setFocus(next);
+        break;
+      }
+    },
     onEnter: () => {
-      if (focus >= 0 && !wrong.includes(focus)) onPick(choices[focus].value, focus);
+      pickIndex(focus);
     },
   });
 
@@ -93,9 +113,11 @@ export default function Choices<T>({
         return (
           <motion.button
             key={i}
+            ref={(button) => { buttons.current[i] = button; }}
+            onFocus={() => setFocus(i)}
             type="button"
             disabled={disabled || isWrong}
-            onClick={() => onPick(c.value, i)}
+            onClick={() => pickIndex(i)}
             aria-label={c.aria}
             animate={isWrong ? { x: [0, -10, 10, -6, 6, 0] } : { x: 0 }}
             transition={{ duration: 0.4 }}

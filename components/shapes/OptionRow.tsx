@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { Figure } from "@/games/patterns/figure";
 import { useGameKeys, useKeydown } from "@/lib/input";
 import FigureView from "./FigureView";
@@ -26,6 +26,7 @@ export default function OptionRow({
   disabled?: boolean;
 }) {
   const [focus, setFocus] = useState(-1);
+  const buttons = useRef<(HTMLButtonElement | null)[]>([]);
 
   useKeydown((e: KeyboardEvent) => {
     if (disabled || e.metaKey || e.ctrlKey) return;
@@ -41,8 +42,15 @@ export default function OptionRow({
   useGameKeys({
     enabled: !disabled,
     onMove: (d) => {
-      if (d === "left" || d === "up") setFocus((f) => (f <= 0 ? options.length - 1 : f - 1));
-      else setFocus((f) => (f + 1) % options.length);
+      const direction = d === "left" || d === "up" ? -1 : 1;
+      let next = focus;
+      for (let tries = 0; tries < options.length; tries++) {
+        next = direction < 0 ? (next <= 0 ? options.length - 1 : next - 1) : (next + 1) % options.length;
+        if (used.includes(next) || wrong.includes(next)) continue;
+        buttons.current[next]?.focus();
+        setFocus(next);
+        break;
+      }
     },
     onEnter: () => {
       if (focus >= 0 && !used.includes(focus) && !wrong.includes(focus)) onPick(focus);
@@ -57,6 +65,8 @@ export default function OptionRow({
         return (
           <motion.button
             key={i}
+            ref={(button) => { buttons.current[i] = button; }}
+            onFocus={() => setFocus(i)}
             type="button"
             disabled={disabled || isUsed || isWrong}
             onClick={() => onPick(i)}

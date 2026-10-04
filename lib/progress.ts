@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
+import { GAMES } from "./catalog";
 
 /** Best stars per level (index -> 1..3) for one game. */
 export type GameProgress = Record<number, number>;
@@ -17,6 +18,30 @@ type ProgressState = {
   toggleMute: () => void;
   resetAll: () => void;
 };
+
+/** Saved browser data is untrusted: retain valid progress without accepting actions or bad shapes. */
+function savedProgress(value: unknown): Pick<ProgressState, "games" | "recent" | "muted"> {
+  const object = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
+  const saved = object(value) ? value : {};
+  const games: Record<string, GameProgress> = {};
+  if (object(saved.games)) {
+    for (const game of GAMES) {
+      const raw = saved.games[game.id];
+      if (!object(raw)) continue;
+      const valid: GameProgress = {};
+      for (let i = 0; i < game.levels; i++) {
+        const stars = raw[i];
+        if (typeof stars === "number" && Number.isInteger(stars) && stars >= 1 && stars <= 3) valid[i] = stars;
+      }
+      if (Object.keys(valid).length) games[game.id] = valid;
+    }
+  }
+  const ids = new Set(GAMES.map((g) => g.id));
+  const recent = Array.isArray(saved.recent)
+    ? [...new Set(saved.recent.filter((id): id is string => typeof id === "string" && ids.has(id)))].slice(0, 6)
+    : [];
+  return { games, recent, muted: typeof saved.muted === "boolean" ? saved.muted : false };
+}
 
 /** localStorage that never throws (private mode, blocked storage, SSR). */
 const safeStorage: StateStorage = {
@@ -66,6 +91,7 @@ export const useProgress = create<ProgressState>()(
       storage: createJSONStorage(() => safeStorage),
       partialize: (s) => ({ muted: s.muted, games: s.games, recent: s.recent }),
       skipHydration: true,
+      merge: (saved, current) => ({ ...current, ...savedProgress(saved) }),
       onRehydrateStorage: () => () => {
         useProgress.setState({ hydrated: true });
       },

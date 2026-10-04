@@ -18,6 +18,32 @@ function runRace(themeIndex: number, steer: (r: Race) => { left: boolean; right:
 }
 
 describe("Rainbow Rally", () => {
+  it.each([60, 30, 20])("collects crossed stars at %i fps while boosting", (fps) => {
+    const race = createRace(0);
+    race.countdown = 0;
+    race.cars = [];
+    race.segments.forEach((s) => { s.items = []; s.curve = 0; s.boost = undefined; });
+    race.position = 100 * SEGMENT - PLAYER_Z + 1;
+    race.speed = MAX_SPEED * 1.22;
+    race.boost = 10;
+    race.segments[101].items = [{ kind: "star", offset: 0 }];
+    for (let i = 0; i < fps / 10; i++) update(race, { left: false, right: false }, 1 / fps);
+    expect(race.stars).toBe(1);
+  });
+
+  it.each(["cone", "boost"])("detects a crossed %s at 20 fps", (kind) => {
+    const race = createRace(0);
+    race.countdown = 0;
+    race.cars = [];
+    race.segments.forEach((s) => { s.items = []; s.curve = 0; s.boost = undefined; });
+    race.position = 100 * SEGMENT - PLAYER_Z + 1;
+    race.speed = MAX_SPEED * 0.82;
+    if (kind === "cone") race.segments[101].items = [{ kind: "cone", offset: 0 }];
+    else race.segments[101].boost = 0;
+    update(race, { left: false, right: false }, 1 / 20);
+    expect(race.events).toContain(kind === "cone" ? "bump" : "boost");
+  });
+
   it("has as many tracks as the home page says", () => {
     expect(THEMES.length).toBe(GAMES.find((g) => g.id === "rainbow-rally")!.levels);
   });
@@ -50,6 +76,7 @@ describe("Rainbow Rally", () => {
   it("countdown holds everyone still, then the car speeds up by itself", () => {
     const race = createRace(0);
     race.cars = []; // no friends to bump into for this check
+    race.segments.forEach((s) => { s.items = []; }); // test acceleration without obstacle collisions
     for (let t = 0; t < 120; t++) update(race, { left: false, right: false }, 1 / 60);
     expect(race.speed).toBe(0);
     for (let t = 0; t < 300; t++) update(race, autopilot(race), 1 / 60);
